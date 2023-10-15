@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { newOrder } from "../services/order";
 import { clearCart } from "../slices/CartSlice";
+import NavBar from "../components/NavBar";
 
 const CheckoutSuccess = () => {
   const location = useLocation();
@@ -39,7 +40,9 @@ const CheckoutSuccess = () => {
       });
   };
   return (
-    <div className="d-flex justify-content-center align-items-center text-center flex-column">
+    <>
+    <NavBar/>
+    <div className="d-flex justify-content-center align-items-center text-center flex-column" style={{height:'75vh'}}>
       {orderId ? (
         <b>
           Order has been created successfully. Your order number is {orderId}
@@ -49,6 +52,7 @@ const CheckoutSuccess = () => {
       )}
       <button onClick={() => nav("/")}>Go to Homepage</button>
     </div>
+    </>
   );
 };
 export default CheckoutSuccess;

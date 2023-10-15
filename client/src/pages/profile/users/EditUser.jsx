@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { editUser, getSingleUser } from "../../../services/user";
 import { useLocation, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Col, Form, Row } from "react-bootstrap";
+import axios from "axios";
 
 const EditUser = () => {
   const { _id } = useParams();
@@ -8,8 +11,10 @@ const EditUser = () => {
   const [file, setFile] = useState();
   const [successful, setSuccessful] = useState(false);
   const [message, setMessage] = useState("");
+  const { user } = useSelector((state) => state.user);
   useEffect(() => {
     getSingleUser(_id).then((res) => {
+      console.log(res.data);
       setData(res.data);
     });
   }, []);
@@ -23,9 +28,21 @@ const EditUser = () => {
       }));
     }
   };
-  const handleEdit = (e) => {
+  const handleEdit = async (e) => {
     e.preventDefault();
-    editUser(_id, data)
+    let img = "";
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "MobileShop");
+      const res = await axios.post(
+        "https://api.cloudinary.com/v1_1/dcnygvsrj/image/upload",
+        formData
+      );
+      img = res.data.url;
+    }
+    const updateData = { ...data, img };
+    editUser(_id, updateData)
       .then(() => {
         setSuccessful(true);
         setMessage("User update successful");
@@ -36,31 +53,31 @@ const EditUser = () => {
       });
   };
   return (
-    <>
-      {data && (
-        <div className="mt-3">
-          <div className="row">
-            <div className="col col-md-4 ">
+    <div className="flex-6 w-100">
+      <div>
+        {data && (
+          <Row className="mt-2 mx-auto">
+            <Col md={4}>
               <p>Profile Image</p>
               <img
                 src={
-                  data.img
-                    ? data.img
-                    : file
+                  file
                     ? URL.createObjectURL(file)
+                    : data.img
+                    ? data.img
                     : "//ssl.gstatic.com/accounts/ui/avatar_2x.png"
                 }
                 alt="profile-img"
                 width={200}
                 height={200}
               />
-            </div>
-            <div className="col col-md-8">
-              <form onSubmit={handleEdit}>
-                <div className="row">
+            </Col>
+            <Col md={8}>
+              <Form onSubmit={handleEdit}>
+                <Row>
                   {!successful && (
                     <>
-                      <div className="col col-md-4 me-2 mb-2">
+                      <Col md={5}>
                         <label htmlFor="username">Username</label>
                         <input
                           type="text"
@@ -69,9 +86,9 @@ const EditUser = () => {
                           value={data.username}
                           readOnly
                         />
-                      </div>
+                      </Col>
 
-                      <div className="col col-md-4 mb-2">
+                      <Col md={5}>
                         <label htmlFor="email">Email</label>
                         <input
                           type="email"
@@ -80,22 +97,24 @@ const EditUser = () => {
                           value={data.email}
                           readOnly
                         />
-                      </div>
-                      <div className="col col-md-4 mb-2">
-                        <label htmlFor="role">Role</label>
-                        <select
-                          className="form-select"
-                          name="role"
-                          required
-                          onChange={handleChange}
-                          defaultValue={data.role}
-                        >
-                          <option value={"admin"}>Admin</option>
-                          <option value={"mod"}>Moderator</option>
-                          <option value={"user"}>User</option>
-                        </select>
-                      </div>
-                      <div className="col col-md-4 mb-2">
+                      </Col>
+                      {user.role !== "user" ? (
+                        <Col md={5} className="mb-2 me-2">
+                          <label htmlFor="role">Role</label>
+                          <select
+                            className="form-select"
+                            name="role"
+                            required
+                            onChange={handleChange}
+                            defaultValue={data.role}
+                          >
+                            <option value={"admin"}>Admin</option>
+                            <option value={"mod"}>Moderator</option>
+                            <option value={"user"}>User</option>
+                          </select>
+                        </Col>
+                      ) : null}
+                      <Col md={5}>
                         <label htmlFor="image">Profile Picture(optional)</label>
                         <input
                           type="file"
@@ -103,7 +122,7 @@ const EditUser = () => {
                           name="image"
                           onChange={handleChange}
                         />
-                      </div>
+                      </Col>
 
                       <div className="form-group">
                         <button className="btn btn-primary btn-block">
@@ -112,28 +131,25 @@ const EditUser = () => {
                       </div>
                     </>
                   )}
-
-                  {message && (
-                    <div className="form-group mb-2">
-                      <div
-                        className={
-                          successful
-                            ? "alert alert-success"
-                            : "alert alert-danger"
-                        }
-                        role="alert"
-                      >
-                        {message}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+                </Row>
+              </Form>
+              {message && (
+                <>
+                  <div
+                    className={
+                      successful ? "alert alert-success" : "alert alert-danger"
+                    }
+                    role="alert"
+                  >
+                    {message}
+                  </div>
+                </>
+              )}
+            </Col>
+          </Row>
+        )}
+      </div>
+    </div>
   );
 };
 
