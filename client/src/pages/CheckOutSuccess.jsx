@@ -36,7 +36,6 @@ const CheckoutSuccess = () => {
         dispatch(clearCart());
       })
       .catch((err) => {
-        console.log("err");
       });
   };
   return (

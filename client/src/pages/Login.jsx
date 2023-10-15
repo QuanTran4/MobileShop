@@ -17,24 +17,19 @@ const Login = () => {
   }, [user]);
 
   const handleChange = (e) => {
-    console.log("first");
     setData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
   };
-  console.log(data);
   const handleRegister = async (e) => {
-    console.log("first");
     e.preventDefault();
     dispatch(LOGIN_START());
     login({ username: data.username, password: data.password })
       .then((res) => {
-        console.log(res, "res");
         dispatch(LOGIN_SUCCESS(res.data));
       })
       .catch((err) => {
-        console.log(err, "err");
         dispatch(LOGIN_FAILURE(err.response.data));
       });
   };

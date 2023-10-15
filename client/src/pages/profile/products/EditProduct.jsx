@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Select from "react-select";
-import { dataColor } from "../../../dataGridColumn/colors";
 import { editProduct } from "../../../services/product";
 import axios from "axios";
 import Quill from "../../../components/Quill";

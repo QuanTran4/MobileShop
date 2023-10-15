@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-// import { DataGrid } from "@mui/x-data-grid";
-import { productColumn } from "../../../dataGridColumn/gridColumns";
 import { Link } from "react-router-dom";
 import { deleteProduct, getAllProducts } from "../../../services/product";
 import { Col, Pagination, Row } from "react-bootstrap";

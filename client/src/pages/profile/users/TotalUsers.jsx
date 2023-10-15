@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteUser, getAllUsers } from "../../../services/user";
-// import { DataGrid } from "@mui/x-data-grid";
-import { userColumns } from "../../../dataGridColumn/gridColumns";
 import { Col, Pagination, Row } from "react-bootstrap";
 const TotalUsers = () => {
   const [data, setData] = useState([]);

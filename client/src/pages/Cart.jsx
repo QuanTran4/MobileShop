@@ -59,7 +59,6 @@ const Cart = () => {
     };
     useEffect(() => {
       const makeRequest = async () => {
-        console.log(stripeToken, "checkkkk");
         try {
           await axios
             .post("/api/checkout/payment", {
@@ -73,11 +72,8 @@ const Cart = () => {
               nav("/success", { state: { stripeData: res.data, cart: cart } });
             })
             .catch((err) => {
-              console.log(err);
-              console.log("err");
             });
         } catch (err) {
-          console.log(err);
         }
       };
       stripeToken && makeRequest();

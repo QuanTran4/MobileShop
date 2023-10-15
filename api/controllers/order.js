@@ -18,7 +18,6 @@ const getSingleOrder = async (req, res) => {
   }
 };
 const updatedOrder = async (req, res) => {
-  console.log(req.body);
   try {
     const updatedOrder = await Order.findByIdAndUpdate(
       req.params.id,

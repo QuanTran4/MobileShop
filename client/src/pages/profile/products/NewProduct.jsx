@@ -1,7 +1,5 @@
 import React, { useRef, useState } from "react";
-import Select from "react-select";
 import { createProduct } from "../../../services/product";
-import { Sizes, dataColor } from "../../../dataGridColumn/colors";
 import axios from "axios";
 import Quill from "../../../components/Quill";
 import { Col, Row, Form } from "react-bootstrap";
