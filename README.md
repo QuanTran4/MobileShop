@@ -40,7 +40,7 @@ E-commerce web app build with React.js, Node.js, Express.js, MongoDB (MERN Stack
 
 ## Features
 - Display products
-- Navbar for different categories(Login, Register,User Profile, Cart)
+- Navbar for different categories(Login, Register,User Profile or Admin Profile, Cart)
 - Shopping Cart (Add, Edit, and Delete Items in Cart)
 - Accept payments from Stripe
 - Admin CMS (create, edit, delete products. Update order to deliver)
