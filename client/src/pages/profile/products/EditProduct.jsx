@@ -273,16 +273,16 @@ const EditProduct = () => {
                     </Col>
                     <Col md={3}>
                       <label htmlFor="add">Add</label>
-                      <button
+                      <span
                         onClick={AddNewColor}
                         name="add"
                         className="form-control"
-                        // onMouseEnter={(e) => {
-                        //   e.target.style.cursor = "pointer";
-                        // }}
+                        onMouseEnter={(e) => {
+                          e.target.style.cursor = "pointer";
+                        }}
                       >
                         Add Color
-                      </button>
+                      </span>
                     </Col>
                   </Row>
                   {colors.length !== 0 &&
@@ -370,15 +370,18 @@ const EditProduct = () => {
                           alt="pic1"
                           className="img-fluid"
                         />
-                        <button
+                        <span
                           id={index}
                           key={index}
                           onClick={() => {
                             removeImageFromData(img, index);
                           }}
+                          onMouseEnter={(e) => {
+                            e.target.style.cursor = "pointer";
+                          }}
                         >
                           X
-                        </button>
+                        </span>
                       </Col>
                     ))}
                   </>
@@ -394,15 +397,18 @@ const EditProduct = () => {
                           alt="pic1"
                           className="img-fluid"
                         />
-                        <button
+                        <span
                           id={index}
                           key={index}
                           onClick={(e) => {
                             removeImageFromArray(e);
                           }}
+                          onMouseEnter={(e) => {
+                            e.target.style.cursor = "pointer";
+                          }}
                         >
                           X
-                        </button>
+                        </span>
                       </Col>
                     ))}
                   </>

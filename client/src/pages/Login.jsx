@@ -28,6 +28,7 @@ const Login = () => {
     login({ username: data.username, password: data.password })
       .then((res) => {
         dispatch(LOGIN_SUCCESS(res.data));
+        
       })
       .catch((err) => {
         dispatch(LOGIN_FAILURE(err.response.data));

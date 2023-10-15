@@ -24,7 +24,12 @@ const ProductDetail = () => {
   useEffect(() => {
     getProduct(path[2]).then((res) => {
       setData(res.data.product);
-      setColor(res.data.product.colors[0]);
+      const {colors} = res.data.product;
+      colors.map((color) =>{
+        if(color.inStock === true){
+          return setColor(color)
+        }
+      })
       setCart(res.data.product);
       setSimilarProduct(res.data.similarProduct);
     });
@@ -94,9 +99,7 @@ const ProductDetail = () => {
                     </h3>
                   </p>
                   <p className="text-end mb-2">
-                    <h5>
-                      {Intl.NumberFormat("en-US").format(data.price)} VND
-                    </h5>
+                    <h5>{Intl.NumberFormat("en-US").format(data.price)} VND</h5>
                   </p>
                   <Row className="mb-2 d-flex">
                     <span className="me-2">Color</span>
@@ -109,7 +112,7 @@ const ProductDetail = () => {
                             }
                             onClick={() => {
                               setColor(item);
-                              if (item.inStock !== 0) {
+                              if (item.inStock === true) {
                                 setDisabled(false);
                               } else {
                                 setDisabled(true);
@@ -128,10 +131,7 @@ const ProductDetail = () => {
                     <div className="col col-md-12 mb-2">Out of Stock</div>
                   ) : (
                     <span className="col col-md-12 mb-2">
-                      <button
-                        disabled={disabled}
-                        onClick={() => handleCart(color)}
-                      >
+                      <button onClick={() => handleCart(color)}>
                         Add to cart
                       </button>
                     </span>
@@ -159,7 +159,9 @@ const ProductDetail = () => {
               </Col>
             </Row>
             <Row>
-              <Col md={12} className="text-center description">{parse(`${data.desc}`)}</Col>
+              <Col md={12} className="text-center description">
+                {parse(`${data.desc}`)}
+              </Col>
             </Row>
           </>
         )}
