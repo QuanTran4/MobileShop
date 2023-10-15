@@ -27,12 +27,10 @@ const NewProduct = () => {
   };
   const deleteColors = (item, index) => {
     let newColors = [...colors];
-    console.log(newColors, "1st", item, index);
     let filtered = newColors.filter((items, ind) => {
       return ind !== index;
     });
     newColors = filtered;
-    console.log(newColors, "2nd", filtered);
     setColors(newColors);
   };
   const AddNewColor = () => {
@@ -108,7 +106,6 @@ const NewProduct = () => {
         setLoading(false);
       });
     }
-    console.log(images, "========", productImage);
     if (colors) {
       setLoading(true);
       const uploaders = colors.map(async (item) => {
@@ -136,7 +133,6 @@ const NewProduct = () => {
           setSuccessful(true);
         })
         .catch((err) => {
-          console.log(err);
           setSuccessful(false);
         });
     } catch (err) {

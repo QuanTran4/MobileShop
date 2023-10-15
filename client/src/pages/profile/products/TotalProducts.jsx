@@ -23,7 +23,6 @@ const TotalProducts = () => {
   }
   useEffect(() => {
     getAllProducts({ page, perPage }).then((res) => {
-      console.log(res.data)
       setData(res.data.items);
       setPageCount(res.data.pagination.pageCount);
     });

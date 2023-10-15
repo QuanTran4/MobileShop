@@ -13,7 +13,6 @@ const Register = () => {
   const nav = useNavigate();
   const handleChange = (e) => {
     if (e.target.name === "image") {
-      console.log(e.target.files[0]);
       setFile(e.target.files[0]);
     } else {
       setData((prev) => ({
@@ -56,7 +55,6 @@ const Register = () => {
         redirecting();
       })
       .catch((err) => {
-        console.log(err, "err");
         setSuccessful(false);
         setMessage(err.response.data);
         setLoading(false);

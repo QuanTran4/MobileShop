@@ -20,7 +20,6 @@ const EditOrder = () => {
     }));
   };
   const handleUpdate = () => {
-    console.log(data);
     setMessage();
     updateOrder(_id, data)
       .then(() => {

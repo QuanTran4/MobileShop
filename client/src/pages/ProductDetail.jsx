@@ -23,7 +23,6 @@ const ProductDetail = () => {
   const nav = useNavigate();
   useEffect(() => {
     getProduct(path[2]).then((res) => {
-      console.log(res.data);
       setData(res.data.product);
       setColor(res.data.product.colors[0]);
       setCart(res.data.product);
@@ -31,7 +30,6 @@ const ProductDetail = () => {
     });
   }, [location]);
   const handleCart = (color) => {
-    console.log(color);
     setCart((prev) => ({
       ...prev,
       colors: color.color,
