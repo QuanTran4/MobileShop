@@ -11,6 +11,7 @@ import {
 } from "../slices/CartSlice";
 import StripeCheckout from "react-stripe-checkout";
 import NavBar from "../components/NavBar";
+import FormatPrice from "../Helper/FormatPrice";
 const KEY =
   "pk_test_51NsdU0JLHNsfgIKgOMlT5kFV9yoHhqxkSqgKW954DQJ7jBFrz3arNjTZLTJRc9stLW7RcgvxOKFcVDC5fr63EXTa00a4arScfO";
 
@@ -71,10 +72,8 @@ const Cart = () => {
             .then((res) => {
               nav("/success", { state: { stripeData: res.data, cart: cart } });
             })
-            .catch((err) => {
-            });
-        } catch (err) {
-        }
+            .catch((err) => {});
+        } catch (err) {}
       };
       stripeToken && makeRequest();
     }, [stripeToken]);
@@ -85,8 +84,13 @@ const Cart = () => {
             <div className="row d-flex justify-content-center my-4">
               <div className="col-md-8">
                 <div className="card mb-4">
-                  <div className="card-header py-3">
+                  <div className="card-header py-3 d-flex">
                     <h5>Item List</h5>
+                    <h5 className="ms-auto">
+                      <button onClick={() => clear()}>
+                        <i className="fa fa-trash"></i> Clear Cart
+                      </button>
+                    </h5>
                   </div>
                   <div className="card-body">
                     {cart.cartItems.map((item) => {
@@ -150,30 +154,12 @@ const Cart = () => {
                                   <i className="fa fa-plus"></i>
                                 </button>
                               </div>
-
-                              <p className="text-start text-md-center">
-                                <strong>
-                                  {item.cartQuantity} x{" "}
-                                  {Intl.NumberFormat("en-US").format(
-                                    item.price
-                                  )}{" "}
-                                  VND
-                                </strong>
-                              </p>
                             </div>
                           </div>
-
-                          <hr className="my-4" />
+                          <hr className="my-2" />
                         </div>
                       );
                     })}
-                  </div>
-                  <div className="card-footer">
-                    <h4>
-                      <button onClick={() => clear()}>
-                        <i className="fa fa-trash"></i> Clear Cart
-                      </button>
-                    </h4>
                   </div>
                 </div>
               </div>
@@ -189,31 +175,18 @@ const Cart = () => {
                           {cartItem.name} ({cartItem.color})
                           <span>
                             {cartItem.cartQuantity} x{" "}
-                            {Intl.NumberFormat("en-US").format(cartItem.price)}{" "}
-                            VND
+                            <FormatPrice price={cartItem.price} />
                           </span>
                         </li>
                       ))}
                       <hr />
-                      <li className="list-group-item d-flex justify-content-between border-0 px-0 pb-0">
-                        Total Products ({cart.amount})
-                        <span>
-                          {Intl.NumberFormat("en-US").format(cart.total)} VND
-                        </span>
-                      </li>
-                      {/* <li className="list-group-item d-flex justify-content-between px-0">
-                        Shipping
-                        <span>
-                          {Intl.NumberFormat("en-US").format(cart.shipping)} VND
-                        </span>
-                      </li> */}
                       <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
                         <div>
                           <strong>Total amount</strong>
                         </div>
                         <span>
                           <strong>
-                            {Intl.NumberFormat("en-US").format(cart.total)} VND
+                            <FormatPrice price={cart.total} />
                           </strong>
                         </span>
                       </li>

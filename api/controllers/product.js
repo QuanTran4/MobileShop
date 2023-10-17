@@ -34,7 +34,6 @@ const deleteProduct = async (req, res) => {
 };
 const getSingleProduct = async (req, res) => {
   try {
-    // const product = await Product.find(req.params.id);
     const product = await Product.findById(req.params.id);
     const similarProduct = await Product.find(
       {
@@ -73,13 +72,43 @@ const getAllProduct = async (req, res) => {
 };
 const getAllPublicProduct = async (req, res) => {
   try {
-    const products = await Product.find({ isActive: true }).sort({
-      createdAt: -1,
-    });
-    return res.status(200).json(products);
+    const Phones = await Product.find(
+      { isActive: true, categories: "Phone" },
+      { _id: 1, name: 1, price: 1, colors: { $slice: 1 }, categories: 1 }
+    )
+      .sort({
+        createdAt: -1,
+      })
+      .limit(4);
+
+    const Tablet = await Product.find(
+      { isActive: true, categories: "Tablet" },
+      { _id: 1, name: 1, price: 1, colors: { $slice: 1 }, categories: 1 }
+    )
+      .sort({
+        createdAt: -1,
+      })
+      .limit(4);
+
+    const Laptop = await Product.find(
+      { isActive: true, categories: "Laptop" },
+      { _id: 1, name: 1, price: 1, colors: { $slice: 1 }, categories: 1 }
+    )
+      .sort({
+        createdAt: -1,
+      })
+      .limit(4);
+
+    return res.status(200).json({ Phones, Tablet, Laptop });
   } catch (e) {
     return res.status(401).json(e);
   }
+};
+const getProductByCategory = async (req, res) => {
+  const { category } = req.params;
+  const query = {};
+  const products = await Product.find({ categories: category });
+  return res.status(200).json(products);
 };
 module.exports = {
   createProduct,
@@ -88,4 +117,5 @@ module.exports = {
   getSingleProduct,
   getAllProduct,
   getAllPublicProduct,
+  getProductByCategory,
 };

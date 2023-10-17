@@ -30,6 +30,7 @@ const NavBar = () => {
         expand="md"
         bg="dark"
         data-bs-theme="dark"
+        className="mb-5"
       >
         <Navbar.Brand href="/">Mobile Store</Navbar.Brand>
         <Navbar.Brand as={Link} to={"/cart"} className="d-flex flex-fill justify-content-end">

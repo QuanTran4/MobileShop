@@ -38,9 +38,9 @@ const cartSlice = createSlice({
     addItem: (state, action) => {
       const existingIndex = state.cartItems.findIndex(
         (item) =>
-        (item._id === action.payload._id) &&
-        item.colorId === action.payload.colorId
-        );
+          item._id === action.payload._id &&
+          item.colorId === action.payload.colorId
+      );
       if (existingIndex >= 0) {
         state.cartItems[existingIndex] = {
           ...state.cartItems[existingIndex],
@@ -54,6 +54,7 @@ const cartSlice = createSlice({
           color: action.payload.colors,
           colorId: action.payload.colorId,
           price: action.payload.price,
+          category: action.payload.categoties,
           cartQuantity: 1,
         };
         state.cartItems.push(tempProductItem);
@@ -61,21 +62,16 @@ const cartSlice = createSlice({
       localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
     },
     deleteItem: (state, action) => {
-      state.cartItems.map((cartItem) => {
-        if (
-          cartItem.id === action.payload._id &&
+      const existingIndex = state.cartItems.findIndex(
+        (item) =>
+          item._id === action.payload._id &&
           item.colorId === action.payload.colorId
-        ) {
-          const nextCartItems = state.cartItems.filter(
-            (item) =>
-              item._id !==
-              action.payload._id.concat("&" + action.payload.colorId)
-          );
-          state.cartItems = nextCartItems;
-        }
-        localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
-        return state;
+      );
+      const nextCartItems = state.cartItems.filter((item,index) => {
+        return index != existingIndex
       });
+      state.cartItems = nextCartItems;
+      localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
     },
     getTotals: (state, action) => {
       let total = 0;

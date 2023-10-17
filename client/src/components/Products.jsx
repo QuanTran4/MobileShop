@@ -5,54 +5,83 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { getAllPublicProducts } from "../services/product";
-import { Col, Row } from "react-bootstrap";
-const Products = () => {
+import { Card, CardBody, Col, Row } from "react-bootstrap";
+// import parse from "html-react-parser";
+import FormatPrice from "../Helper/FormatPrice";
+const Products = ({ content, title }) => {
   const [data, setData] = useState();
   useEffect(() => {
-    getAllPublicProducts(null)
-      .then((res) => {
-        setData(res.data);
-      })
-      .catch((err) => {
-      });
-  }, []);
+    setData(content);
+  }, [content]);
   return (
-    <div className="container shadow-lg">
+    <>
       {data && (
-        <Row>
+        <Row className="ms-2 mx-auto mb-4 w-100">
+          {title && (
+            <Col md={12}>
+              <span className="d-flex">
+                <h3>{title}</h3>
+                <Link to={`/${data[0].categories}`} className="ms-auto">
+                  Watch more
+                </Link>
+              </span>
+            </Col>
+          )}
           {data.map((product) => {
             return (
-              <Col md={3}
-                className=" rounded card"
+              <Col
+                lg={3}
+                md={5}
                 key={product._id}
+                className="mb-2 text-center"
+                width={"100%"}
+                style={{ position: "inherit" }}
               >
-                <img
-                  className="card-img-top p-3"
-                  src={product.colors[0].image}
-                  alt={product.name}
-                  height={200}
-                  width={200}
-                />
-                <div className="card-body">{product.name}</div>
-                <ul className="list-group list-group-flush">
-                  <li className="list-group-item lead">
-                    {Intl.NumberFormat("en-US").format(product.price)} VND
-                  </li>
-                </ul>
-                <div className="card-body">
-                  <Link
-                    to={`/products/${product._id}`}
-                    className="btn btn-dark m-1"
-                  >
-                    Detail
-                  </Link>
-                </div>
+                  <img
+                    src={product.colors[0].image}
+                    alt="Image"
+                    height={250}
+                    width={"100%"}
+                    // style={{ position: "inherit" }}
+                    // onMouseEnter={(e) => {
+                    //   e.target.style.cursor = "pointer";
+                    //   e.target.style.scale = '1.2'
+                    // }}
+                    // onMouseOut={(e) =>{
+                    //   e.target.style.scale = '1'
+                    // }}
+                    className="mb-2"
+                  />
+                  <span>
+                    <h5>{product.name}</h5>
+                    <p>
+                      <FormatPrice price={product.price} />
+                    </p>
+                    {/* {product?.desc && (
+                      <>
+                        <p className="text-break">
+                          {parse(
+                            `${product.desc}`.slice(
+                              0,
+                              product.desc.indexOf("</h")
+                            )
+                          )}
+                        </p>
+                      </>
+                    )} */}
+                    <Link
+                      to={`/${product.categories}/${product._id}`}
+                      className="btn btn-secondary"
+                    >
+                      Detail
+                    </Link>
+                  </span>
               </Col>
             );
           })}
         </Row>
       )}
-    </div>
+    </>
   );
 };
 

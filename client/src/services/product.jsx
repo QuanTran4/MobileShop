@@ -7,6 +7,9 @@ export const getAllProducts = (query) => {
 export const getAllPublicProducts = () => {
   return publicRequest.get(API_URL);
 };
+export const getProductByCategory = (cat,query) =>{
+  return publicRequest.get(API_URL + `/${cat}`,{params: query});
+}
 export const createProduct = (data) => {
   return userRequest.post(API_URL, data);
 };

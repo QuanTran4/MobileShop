@@ -18,6 +18,7 @@ import ProductDetail from "./pages/ProductDetail";
 import CheckoutSuccess from "./pages/CheckOutSuccess";
 import TotalOrders from "./pages/profile/orders/TotalOrders";
 import EditOrder from "./pages/profile/orders/EditOrder";
+import SCate from "./pages/SCate";
 const App = () => {
   return (
     <BrowserRouter>
@@ -26,7 +27,10 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/products/:id" element={<ProductDetail />} />
+        <Route path="/:category">
+          <Route index element={<SCate />} />
+          <Route path=":id" element={<ProductDetail />} />
+        </Route>
         <Route path="/success" element={<CheckoutSuccess />} />
         <Route path="/profile" element={<ProtectedRoute />}>
           <Route index element={<ProfilePage />} />

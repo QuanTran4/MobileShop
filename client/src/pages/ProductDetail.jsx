@@ -8,7 +8,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import { Col, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import parse from "html-react-parser";
 
 const ProductDetail = () => {
@@ -24,12 +24,12 @@ const ProductDetail = () => {
   useEffect(() => {
     getProduct(path[2]).then((res) => {
       setData(res.data.product);
-      const {colors} = res.data.product;
-      colors.map((color) =>{
-        if(color.inStock === true){
-          return setColor(color)
+      const { colors } = res.data.product;
+      colors.map((color) => {
+        if (color.inStock === true) {
+          return setColor(color);
         }
-      })
+      });
       setCart(res.data.product);
       setSimilarProduct(res.data.similarProduct);
     });
@@ -53,7 +53,7 @@ const ProductDetail = () => {
   return (
     <>
       <NavBar />
-      <div className="container">
+      <Container>
         {data && (
           <>
             <Row>
@@ -141,7 +141,7 @@ const ProductDetail = () => {
                   <p className="text-center"> Similar Product</p>
                   {similarProduct.map((items) => {
                     return (
-                      <Col md={2}>
+                      <Col md={2} className="mx-auto">
                         <img
                           src={items.colors[0].image}
                           width={100}
@@ -151,7 +151,7 @@ const ProductDetail = () => {
                           }}
                           onClick={() => nav(`/products/${items._id}`)}
                         />
-                        {items.name}
+                        <span className="text-break">{items.name}</span>
                       </Col>
                     );
                   })}
@@ -165,7 +165,7 @@ const ProductDetail = () => {
             </Row>
           </>
         )}
-      </div>
+      </Container>
     </>
   );
 };
