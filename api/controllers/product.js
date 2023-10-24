@@ -41,7 +41,7 @@ const getSingleProduct = async (req, res) => {
         _id: { $ne: product._id },
         isActive: true,
       },
-      { name: 1, colors: 1, _id: 1 }
+      { name: 1, colors: { $slice: 1 }, _id: 1, categories: 1 }
     )
       .sort({ createdAt: -1 })
       .limit(5);

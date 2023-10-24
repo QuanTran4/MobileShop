@@ -8,7 +8,7 @@ const PaginationComponent = ({
   itemsPerPage,
   currentPage,
   setCurrentPage,
-  setItemPerPage,
+  setItemsPerPage,
   alwaysShown = true,
 }) => {
   const pagesCount = Math.ceil(itemsCount / itemsPerPage);
@@ -20,7 +20,8 @@ const PaginationComponent = ({
     setCurrentPage(number);
   };
   const changeItemsPerPage = (e) => {
-    setItemPerPage(e.target.value);
+    let number = parseInt(e.target.value);
+    setItemsPerPage(number);
     setCurrentPage(1);
   };
   const onPageNumberClick = (pageNumber) => {
@@ -48,7 +49,7 @@ const PaginationComponent = ({
     const isPageNumberFirst = pageNumber === 1;
     const isPageNumberLast = pageNumber === pagesCount;
     const isCurrentPageWithinTwoPageNumbers =
-      Math.abs(pageNumber - currentPage) <= 2;
+      Math.abs(pageNumber - currentPage) <= 1;
 
     if (
       isPageNumberFirst ||
@@ -116,7 +117,7 @@ PaginationComponent.propTypes = {
   itemsCount: PropTypes.number.isRequired,
   currentPage: PropTypes.number.isRequired,
   setCurrentPage: PropTypes.func.isRequired,
-  setItemPerPage:PropTypes.number.isRequired,
+  itemsPerPage: PropTypes.number.isRequired,
   alwaysShown: PropTypes.bool,
 };
 

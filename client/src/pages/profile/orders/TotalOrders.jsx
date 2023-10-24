@@ -70,7 +70,7 @@ const TotalOrders = () => {
                   <h5>UserId</h5>
                 </Col>
               )}
-              <Col md={3}>
+              <Col md={2}>
                 <h5>Product</h5>
               </Col>
               <Col md={1}>
@@ -82,17 +82,20 @@ const TotalOrders = () => {
               <Col md={2}>
                 <h5>Address</h5>
               </Col>
-              {user.role === "admin" ||
-                (user.role === "mod" && (
-                  <>
-                    <Col md={1}>
-                      <h5>Edit</h5>
-                    </Col>
-                    <Col md={2}>
-                      <h5>Delete</h5>
-                    </Col>
-                  </>
-                ))}
+              <Col md={1}>
+                <h5>Payment method</h5>
+              </Col>
+
+              {user.role === "admin" && (
+                <>
+                  <Col md={1}>
+                    <h5>Edit</h5>
+                  </Col>
+                  <Col md={2}>
+                    <h5>Delete</h5>
+                  </Col>
+                </>
+              )}
             </Row>
             {data.map((item) => {
               return (
@@ -105,7 +108,7 @@ const TotalOrders = () => {
                       {item.userId}
                     </Col>
                   )}
-                  <Col md={3} className="text-break text-center">
+                  <Col md={2} className="text-break text-center">
                     {item.products.map((product, index) => {
                       return (
                         <span
@@ -144,6 +147,8 @@ const TotalOrders = () => {
                       )}
                     </div>
                   </Col>
+                  <Col md={1}>{item.payment_method}</Col>
+
                   {user.role === "user" ? (
                     <Col md={1}>
                       <button className="btn btn-primary btn-block">
@@ -190,7 +195,6 @@ const TotalOrders = () => {
                       </Col>
                     </>
                   )}
-                  <Col md={1}>{item.payment_method}</Col>
                 </Row>
               );
             })}
@@ -201,7 +205,7 @@ const TotalOrders = () => {
               itemsPerPage={perPage}
               currentPage={page}
               setCurrentPage={setPage}
-              setItemPerPage={setPerPage}
+              setItemsPerPage={setPerPage}
               alwaysShown={false}
             />
           </Container>

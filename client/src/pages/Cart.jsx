@@ -15,6 +15,7 @@ import {
   CardBody,
   CardHeader,
   CardImg,
+  CardTitle,
   Col,
   Container,
   Form,
@@ -171,84 +172,99 @@ const Cart = () => {
           </Col>
           <Col md={4}>
             <Card className="mb-4 sticky-top">
-              {!payment ? (
-                <>
-                  <CardHeader className="py-3 bg-light">
-                    <h5 className="mb-0">Order Summary</h5>
-                  </CardHeader>
-                  <CardBody>
-                    <ul className="list-group list-group-flush">
-                      {cart.cartItems.map((cartItem) => (
-                        <li className="list-group-item d-flex justify-content-between border-0 px-0 pb-0">
-                          {cartItem.name} ({cartItem.color})
-                          <span>
-                            {cartItem.cartQuantity} x{" "}
-                            <FormatPrice price={cartItem.price} />
-                          </span>
-                        </li>
-                      ))}
-                      <hr />
-                      <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
-                        <div>
-                          <strong>Total amount</strong>
-                        </div>
+              <>
+                <CardHeader className="py-3 bg-light">
+                  <h5 className="mb-0">Order Summary</h5>
+                </CardHeader>
+                <CardBody>
+                  <ul className="list-group list-group-flush">
+                    {cart.cartItems.map((cartItem) => (
+                      <li className="list-group-item d-flex justify-content-between border-0 px-0 pb-0">
+                        {cartItem.name} ({cartItem.color})
                         <span>
-                          <strong>
-                            <FormatPrice price={cart.total} />
-                          </strong>
+                          {cartItem.cartQuantity} x{" "}
+                          <FormatPrice price={cartItem.price} />
                         </span>
                       </li>
-                    </ul>
+                    ))}
+                    <hr />
+                    <li className="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                      <div>
+                        <strong>Total amount</strong>
+                      </div>
+                      <span>
+                        <strong>
+                          <FormatPrice price={cart.total} />
+                        </strong>
+                      </span>
+                    </li>
+                  </ul>
+
+                  {!payment ? (
                     <div className="d-flex justify-content-between">
                       <button onClick={() => stripe()}>Pay with Card</button>
                       Or
                       <button onClick={() => manual()}>Cash Payment</button>
                     </div>
-                  </CardBody>
-                </>
-              ) : (
-                <CardBody>
-                  <Form onSubmit={handleSubmit}>
-                    <label htmlFor="address">Address</label>
-                    <input
-                      type="text"
-                      name="address"
-                      placeholder="123 Pham Van Chieu"
-                      onChange={handleChange}
-                      required
-                    />
-                    <label htmlFor="name">Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      placeholder="Name or Fullname"
-                      onChange={handleChange}
-                      required
-                    />
-                    <label htmlFor="number">Phone number</label>
-                    <input
-                      type="number"
-                      name="number"
-                      onKeyDown={(e) =>
-                        ["-", "+", "e", "E", "."].includes(e.key) &&
-                        e.preventDefault()
-                      }
-                      required
-                      onChange={handleChange}
-                    />
-                    <label htmlFor="email">Email</label>
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="123@gmail.com"
-                      // defaultValue={user.email}
-                      // required
-                      onChange={handleChange}
-                    />
-                    <button type="submit">Order</button>
-                  </Form>
+                  ) : (
+                    <>
+                      <CardTitle>
+                        <button onClick={() => setPayment(false)}>
+                          <i className="fa fa-arrow-left"></i>
+                        </button>
+                      </CardTitle>
+                      <CardBody>
+                        <Form
+                          onSubmit={handleSubmit}
+                          className="d-flex flex-column"
+                        >
+                          <label htmlFor="address">Address</label>
+                          <input
+                            type="text"
+                            name="address"
+                            placeholder="123 Pham Van Chieu"
+                            className="form-control"
+                            onChange={handleChange}
+                            required
+                          />
+                          <label htmlFor="name">Name</label>
+                          <input
+                            type="text"
+                            name="name"
+                            placeholder="Name or Fullname"
+                            className="form-control"
+                            onChange={handleChange}
+                            required
+                          />
+                          <label htmlFor="number">Phone number</label>
+                          <input
+                            type="number"
+                            name="number"
+                            onKeyDown={(e) =>
+                              ["-", "+", "e", "E", "."].includes(e.key) &&
+                              e.preventDefault()
+                            }
+                            className="form-control"
+                            required
+                            onChange={handleChange}
+                          />
+                          <label htmlFor="email">Email</label>
+                          <input
+                            type="email"
+                            name="email"
+                            placeholder="123@gmail.com"
+                            // defaultValue={user.email}
+                            className="form-control"
+                            // required
+                            onChange={handleChange}
+                          />
+                          <button type="submit">Order</button>
+                        </Form>
+                      </CardBody>
+                    </>
+                  )}
                 </CardBody>
-              )}
+              </>
             </Card>
           </Col>
         </Row>

@@ -58,9 +58,6 @@ const SCate = () => {
               </label>
             </span>
           </div>
-            {data && data.length > 4 && !open &&(
-              <button onClick={handleOpen}>More Products</button>
-            )}
         </Col>
         <Col
           md={11}
@@ -68,6 +65,11 @@ const SCate = () => {
           style={open ? {} : { height: "750px" }}
         >
           {filter ? <Products content={filter} /> : <>Loading...</>}
+          {data && data.length > 4 && !open && (
+            <div className=" text-center sticky-bottom">
+              <button onClick={handleOpen}>More Products</button>
+            </div>
+          )}
         </Col>
       </Container>
     </>

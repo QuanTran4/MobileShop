@@ -20,7 +20,7 @@ const Products = ({ content, title }) => {
   return (
     <>
       {data && (
-        <Row className="ms-2 mx-auto mb-4 w-100">
+        <Row className="mb-2">
           {title && (
             <Col md={12}>
               <span className="d-flex">
@@ -36,31 +36,25 @@ const Products = ({ content, title }) => {
                   lg={3}
                   md={5}
                   key={product._id}
-                  className="text-center"
+                  className="text-center mb-2"
                   style={{ position: "inherit" }}
                 >
-                  <Card className=" p-1 m-0 mb-2 shadow-lg">
+                  <Card className=" p-0 m-0">
                     <CardImg
                       src={product.colors[0].image}
                       alt="Image"
                       height={250}
                       width={"90%"}
                     ></CardImg>
-                    {/* <img
-                      className="mb-2"
-                      src={product.colors[0].image}
-                      alt="Image"
-                      height={250}
-                      width={"90%"}
-                    /> */}
-                    <CardBody className="p-0 pt-3 ">
+                    <CardBody className="p-0 pt-2">
                       <CardTitle>{product.name}</CardTitle>
                       <CardText>
                         <FormatPrice price={product.price} />
                       </CardText>
                     </CardBody>
                     <CardFooter>
-                      <Link to={`/${product.categories}/${product._id}`}
+                      <Link
+                        to={`/${product.categories}/${product._id}`}
                         className="text-decoration-none btn btn-block"
                       >
                         Detail

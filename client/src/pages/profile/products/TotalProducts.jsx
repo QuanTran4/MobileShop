@@ -149,7 +149,7 @@ const TotalProducts = () => {
               itemsPerPage={perPage}
               currentPage={page}
               setCurrentPage={setPage}
-              setItemPerPage={setPerPage}
+              setItemsPerPage={setPerPage}
               alwaysShown={false}
             />
           </Container>

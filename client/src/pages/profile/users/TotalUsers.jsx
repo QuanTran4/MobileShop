@@ -104,7 +104,7 @@ const TotalUsers = () => {
               itemsCount={pageCount}
               itemsPerPage={perPage}
               currentPage={page}
-              setItemPerPage={setPerPage}
+              setItemsPerPage={setPerPage}
               setCurrentPage={setPage}
               alwaysShown={false}
             />
