@@ -5,7 +5,7 @@ const createProduct = async (req, res) => {
 
   try {
     const savedProduct = await newProduct.save();
-    res.status(200).json(savedProduct);
+    res.status(200).json("Product Created Successfully!");
   } catch (err) {
     res.status(500).json(err);
   }
@@ -19,7 +19,7 @@ const updatedProduct = async (req, res) => {
       },
       { new: true }
     );
-    res.status(200).json(updatedProduct);
+    res.status(200).json("Product Updated Successfully!");
   } catch (err) {
     res.status(500).json(err);
   }
@@ -42,7 +42,9 @@ const getSingleProduct = async (req, res) => {
         isActive: true,
       },
       { name: 1, colors: 1, _id: 1 }
-    );
+    )
+      .sort({ createdAt: -1 })
+      .limit(5);
     res.status(200).json({ product, similarProduct });
   } catch (err) {
     res.status(500).json(err);
@@ -61,9 +63,8 @@ const getAllProduct = async (req, res) => {
       .limit(ITEMS_PER_PAGE)
       .skip(skip);
     const [count, items] = await Promise.all([countPromise, itemsPromise]);
-    const pageCount = Math.ceil(count / ITEMS_PER_PAGE);
     return res.status(200).json({
-      pagination: { count, pageCount },
+      count,
       items,
     });
   } catch (e) {
@@ -107,7 +108,10 @@ const getAllPublicProduct = async (req, res) => {
 const getProductByCategory = async (req, res) => {
   const { category } = req.params;
   const query = {};
-  const products = await Product.find({ categories: category });
+  const products = await Product.find(
+    { categories: category },
+    { name: 1, colors: { $slice: 1 }, price: 1, _id: 1, categories: 1 }
+  );
   return res.status(200).json(products);
 };
 module.exports = {

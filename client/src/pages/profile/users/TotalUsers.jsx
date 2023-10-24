@@ -1,31 +1,24 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { deleteUser, getAllUsers } from "../../../services/user";
-import { Col, Pagination, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
+import PaginationComponent from "../../../components/Pagination";
 const TotalUsers = () => {
   const [data, setData] = useState([]);
   const [openModal, setOpenModal] = useState();
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
-  const [perPage, setPerPage] = useState(2);
+  const [perPage, setPerPage] = useState(5);
   const nav = useNavigate();
-  let totalPages = [];
-  for (let number = 1; number <= pageCount; number++) {
-    totalPages.push(
-      <Pagination.Item
-        key={number}
-        active={number === page}
-        onClick={() => handlePage(number)}
-      >
-        {number}
-      </Pagination.Item>
-    );
-  }
   useEffect(() => {
-    getAllUsers({ page, perPage }).then((res) => {
-      setData(res.data.items);
-      setPageCount(res.data.pagination.pageCount);
-    });
+    const getUsers = () => {
+      getAllUsers({ page, perPage }).then((res) => {
+        setData(res.data.items);
+        setPageCount(res.data.count);
+      });
+    };
+  
+    page && perPage &&  getUsers();
   }, [page, perPage]);
   const handleModal = (id) => {
     setOpenModal(id);
@@ -34,38 +27,33 @@ const TotalUsers = () => {
     deleteUser(id);
     setData(data.filter((item) => item.id !== id));
   };
-  const handlePrevious = () => {
-    setPage((p) => {
-      if (p === 1) return p;
-      return p - 1;
-    });
-  };
-  const handlePage = (number) => {
-    setPage(number);
-  };
-  const handleNext = () => {
-    setPage((p) => {
-      if (p === pageCount) return p;
-      return p + 1;
-    });
-  };
   return (
     <>
-      <div className="d-flex justify-content-center align-items-center">
+      <Container className="d-flex mb-4">
         <h3 className="mx-auto">Users</h3>
         <Link to={"new"} className="text-right">
           <h5>Add User</h5>
         </Link>
-      </div>
+      </Container>
       {data ? (
-        <>
-          <div>
+        <div className="h-100 overflow-auto">
+          <Container className="p-0">
             <Row className="mx-auto mb-2 border-bottom">
-              <Col md={3}>userId</Col>
-              <Col md={3}>Username</Col>
-              <Col md={3}>Roles</Col>
-              <Col md={1}>Edit</Col>
-              <Col md={2}>Delete</Col>
+              <Col md={3}>
+                <h5>userId</h5>
+              </Col>
+              <Col md={3}>
+                <h5>Username</h5>
+              </Col>
+              <Col md={3}>
+                <h5>Roles</h5>
+              </Col>
+              <Col md={1}>
+                <h5>Edit</h5>
+              </Col>
+              <Col md={2}>
+                <h5>Delete</h5>
+              </Col>
             </Row>
             {data.map((item) => {
               return (
@@ -110,33 +98,18 @@ const TotalUsers = () => {
                 </Row>
               );
             })}
-          </div>
-          <div className="container d-flex justify-content-center">
-            <div className="d-flex flex-fill">
-              <label htmlFor="order">Order Per Page</label>
-              <select
-                name="order"
-                value={perPage}
-                onChange={(e) => {
-                  setPerPage(e.target.value);
-                  setPage(1);
-                }}
-              >
-                <option value={2}>2</option>
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-              </select>
-            </div>
-            <Pagination size="sm">
-              <Pagination.Prev disabled={page === 1} onClick={handlePrevious} />
-              {totalPages}
-              <Pagination.Next
-                disabled={page === pageCount}
-                onClick={handleNext}
-              />
-            </Pagination>
-          </div>
-        </>
+          </Container>
+          <Container>
+            <PaginationComponent
+              itemsCount={pageCount}
+              itemsPerPage={perPage}
+              currentPage={page}
+              setItemPerPage={setPerPage}
+              setCurrentPage={setPage}
+              alwaysShown={false}
+            />
+          </Container>
+        </div>
       ) : (
         <>Loading...</>
       )}

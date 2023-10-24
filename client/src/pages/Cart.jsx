@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { toast } from "react-toastify";
 import {
   addItem,
   removeItem,
@@ -9,40 +9,43 @@ import {
   getTotals,
   clearCart,
 } from "../slices/CartSlice";
-import StripeCheckout from "react-stripe-checkout";
-import NavBar from "../components/NavBar";
-import FormatPrice from "../Helper/FormatPrice";
-const KEY =
-  "pk_test_51NsdU0JLHNsfgIKgOMlT5kFV9yoHhqxkSqgKW954DQJ7jBFrz3arNjTZLTJRc9stLW7RcgvxOKFcVDC5fr63EXTa00a4arScfO";
+import FormatPrice from "../components/FormatPrice";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  CardImg,
+  Col,
+  Container,
+  Form,
+  Row,
+} from "react-bootstrap";
+import { createPaymentIntent } from "../services/payment";
 
 const Cart = () => {
   const cart = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-
   const nav = useNavigate();
   const EmptyCart = () => {
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col-md-12 py-5 bg-light text-center">
+      <Container className="container">
+        <Row>
+          <Col md={12} className="py-5 bg-light text-center">
             <h4 className="p-3 display-5">Your Cart is Empty</h4>
-            <Link to="/" className="btn  btn-outline-dark mx-4">
+            <Link to="/" className="btn btn-outline-dark mx-4">
               <i className="fa fa-arrow-left"></i> Continue Shopping
             </Link>
-          </div>
-        </div>
-      </div>
+          </Col>
+        </Row>
+      </Container>
     );
   };
 
   const ShowCart = () => {
-    useEffect(() => {
-      dispatch(getTotals());
-      if (user) setCheckOut(true);
-    }, [cart, dispatch, user]);
-    const [stripeToken, setStripeToken] = useState(null);
     const [checkOut, setCheckOut] = useState(false);
+    const [payment, setPayment] = useState(false);
+    const [data, setData] = useState({});
     const increase = (product) => {
       dispatch(addItem(product));
     };
@@ -55,120 +58,125 @@ const Cart = () => {
     const clear = () => {
       dispatch(clearCart());
     };
-    const onToken = (token) => {
-      setStripeToken(token);
-    };
     useEffect(() => {
-      const makeRequest = async () => {
-        try {
-          await axios
-            .post("/api/checkout/payment", {
-              tokenId: stripeToken.id,
-              amount: cart.total,
-              email: stripeToken.email,
-              user: user._id,
-              items: cart.cartItems,
-            })
-            .then((res) => {
-              nav("/success", { state: { stripeData: res.data, cart: cart } });
-            })
-            .catch((err) => {});
-        } catch (err) {}
-      };
-      stripeToken && makeRequest();
-    }, [stripeToken]);
+      dispatch(getTotals());
+      if (user) setCheckOut(true);
+    }, [cart, dispatch, user]);
+    const stripe = () => {
+      if (checkOut) {
+        createPaymentIntent({ cart, user }).then((res) => {
+          window.location.href = res.data.url;
+        });
+      } else {
+        toast.info("Must be logged in to checkout", {
+          position: toast.POSITION.TOP_CENTER,
+        });
+      }
+    };
+    const manual = () => {
+      if (checkOut) {
+        setPayment(true);
+      } else {
+        toast.info("Must be logged in to checkout", {
+          position: toast.POSITION.TOP_CENTER,
+        });
+      }
+    };
+    const handleChange = (e) => {
+      setData((prev) => ({
+        ...prev,
+        [e.target.name]: e.target.value,
+      }));
+    };
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      nav("/success", { state: { data } });
+    };
     return (
-      <>
-        <section className="h-100 gradient-custom">
-          <div className="container">
-            <div className="row d-flex justify-content-center my-4">
-              <div className="col-md-8">
-                <div className="card mb-4">
-                  <div className="card-header py-3 d-flex">
-                    <h5>Item List</h5>
-                    <h5 className="ms-auto">
-                      <button onClick={() => clear()}>
-                        <i className="fa fa-trash"></i> Clear Cart
-                      </button>
-                    </h5>
-                  </div>
-                  <div className="card-body">
-                    {cart.cartItems.map((item) => {
-                      return (
-                        <div key={item.id}>
-                          <div className="row d-flex align-items-center">
-                            <div className="col-lg-3 col-md-12">
-                              <div
-                                className="bg-image rounded"
-                                data-mdb-ripple-color="light"
-                              >
-                                <img
-                                  src={item.thumbnail}
-                                  // className="w-100"
-                                  alt={item.title}
-                                  width={100}
-                                  height={75}
-                                />
-                              </div>
-                              <button
-                                className="btn px-3"
-                                onClick={() => {
-                                  deletes(item);
-                                }}
-                              >
-                                <i className="fa fa-trash"></i>
-                              </button>
-                            </div>
+      <Container className="h-100 gradient-custom">
+        <Row className="d-flex justify-content-center my-4">
+          <Col md={8}>
+            <Card className="mb-4">
+              <CardHeader className="py-3 d-flex">
+                <h5>Item List</h5>
+                <h5 className="ms-auto">
+                  <button onClick={() => clear()}>
+                    <i className="fa fa-trash"></i> Clear Cart
+                  </button>
+                </h5>
+              </CardHeader>
+              <CardBody>
+                {cart.cartItems.map((item) => {
+                  return (
+                    <Row className="d-flex align-items-center border-bottom border-2">
+                      <Col lg={3} md={12}>
+                        <CardImg
+                          src={item.thumbnail}
+                          alt={item.title}
+                          className="img-fluid"
+                        ></CardImg>
+                      </Col>
 
-                            <div className="col-lg-5 col-md-6">
-                              <p>
-                                <strong>{item.name}</strong>
-                              </p>
-                              <p>Color: {item?.color}</p>
-                              {/* <p>Size: M</p> */}
-                            </div>
-
-                            <div className="col-lg-4 col-md-6">
-                              <div
-                                className="d-flex mb-4"
-                                style={{ maxWidth: "300px" }}
-                              >
-                                <button
-                                  className="btn px-3"
-                                  disabled={item.cartQuantity === 1}
-                                  onClick={() => {
-                                    decrease(item);
-                                  }}
-                                >
-                                  <i className="fa fa-minus"></i>
-                                </button>
-
-                                <p className="mx-5">{item.cartQuantity}</p>
-
-                                <button
-                                  className="btn px-3"
-                                  onClick={() => {
-                                    increase(item);
-                                  }}
-                                >
-                                  <i className="fa fa-plus"></i>
-                                </button>
-                              </div>
-                            </div>
-                          </div>
-                          <hr className="my-2" />
+                      <Col lg={5} md={6}>
+                        <div>
+                          <strong>{item.name}</strong>
                         </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-              <div className="col-md-4">
-                <div className="card mb-4 sticky-top">
-                  <div className="card-header py-3 bg-light">
+                        <div>Color: {item?.color}</div>
+                      </Col>
+
+                      <Col lg={4} md={6}>
+                        <div
+                          className="d-flex mb-4"
+                          style={{ maxWidth: "300px" }}
+                        >
+                          <button
+                            className="btn px-3"
+                            disabled={item.cartQuantity === 1}
+                            onClick={() => {
+                              decrease(item);
+                            }}
+                          >
+                            <i className="fa fa-minus"></i>
+                          </button>
+
+                          <p className="mx-5">{item.cartQuantity}</p>
+
+                          <button
+                            className="btn px-3"
+                            onClick={() => {
+                              increase(item);
+                            }}
+                          >
+                            <i className="fa fa-plus"></i>
+                          </button>
+                        </div>
+                        <div>
+                          <span className="d-flex justify-content-end">
+                            <button
+                              className="btn px-3"
+                              onClick={() => {
+                                deletes(item);
+                              }}
+                            >
+                              <i className="fa fa-trash"></i>
+                            </button>
+                          </span>
+                        </div>
+                      </Col>
+                    </Row>
+                  );
+                })}
+              </CardBody>
+            </Card>
+          </Col>
+          <Col md={4}>
+            <Card className="mb-4 sticky-top">
+              {!payment ? (
+                <>
+                  <CardHeader className="py-3 bg-light">
                     <h5 className="mb-0">Order Summary</h5>
-                  </div>
-                  <div className="card-body">
+                  </CardHeader>
+                  <CardBody>
                     <ul className="list-group list-group-flush">
                       {cart.cartItems.map((cartItem) => (
                         <li className="list-group-item d-flex justify-content-between border-0 px-0 pb-0">
@@ -191,56 +199,65 @@ const Cart = () => {
                         </span>
                       </li>
                     </ul>
-
-                    {checkOut ? (
-                      <StripeCheckout
-                        name="Mobile Shop"
-                        image="https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png"
-                        description={`Your total is ${cart.total}VND`}
-                        // email={user.email}
-                        billingAddress
-                        shippingAddress
-                        amount={cart.total}
-                        phone
-                        token={onToken}
-                        stripeKey={KEY}
-                        currency="VND"
-                      >
-                        <button> Pay with Card</button>
-                      </StripeCheckout>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => {
-                            alert("Must login before checkout", nav("/login"));
-                          }}
-                        >
-                          Check Out
-                        </button>
-                      </>
-                    )}
-                    {/* <button onClick={() => handleCheckout(cart)}>
-                      Check Out
-                    </button> */}
-                    {/* <Link
-                      to="checkout"
-                      className="btn btn-dark btn-lg btn-block"
-                    >
-                      Go to checkout
-                    </Link> */}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      </>
+                    <div className="d-flex justify-content-between">
+                      <button onClick={() => stripe()}>Pay with Card</button>
+                      Or
+                      <button onClick={() => manual()}>Cash Payment</button>
+                    </div>
+                  </CardBody>
+                </>
+              ) : (
+                <CardBody>
+                  <Form onSubmit={handleSubmit}>
+                    <label htmlFor="address">Address</label>
+                    <input
+                      type="text"
+                      name="address"
+                      placeholder="123 Pham Van Chieu"
+                      onChange={handleChange}
+                      required
+                    />
+                    <label htmlFor="name">Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      placeholder="Name or Fullname"
+                      onChange={handleChange}
+                      required
+                    />
+                    <label htmlFor="number">Phone number</label>
+                    <input
+                      type="number"
+                      name="number"
+                      onKeyDown={(e) =>
+                        ["-", "+", "e", "E", "."].includes(e.key) &&
+                        e.preventDefault()
+                      }
+                      required
+                      onChange={handleChange}
+                    />
+                    <label htmlFor="email">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="123@gmail.com"
+                      // defaultValue={user.email}
+                      // required
+                      onChange={handleChange}
+                    />
+                    <button type="submit">Order</button>
+                  </Form>
+                </CardBody>
+              )}
+            </Card>
+          </Col>
+        </Row>
+      </Container>
     );
   };
 
   return (
     <>
-      <NavBar />
       <div className="container my-3 py-3">
         <Link to={"/"}>
           <h5 className="text-center">Continue Shopping</h5>{" "}

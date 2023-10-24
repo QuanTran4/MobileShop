@@ -19,39 +19,52 @@ import CheckoutSuccess from "./pages/CheckOutSuccess";
 import TotalOrders from "./pages/profile/orders/TotalOrders";
 import EditOrder from "./pages/profile/orders/EditOrder";
 import SCate from "./pages/SCate";
+import NavBar from "./components/NavBar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "swiper/css";
+import "swiper/css/navigation";
 const App = () => {
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/:category">
-          <Route index element={<SCate />} />
-          <Route path=":id" element={<ProductDetail />} />
-        </Route>
-        <Route path="/success" element={<CheckoutSuccess />} />
-        <Route path="/profile" element={<ProtectedRoute />}>
-          <Route index element={<ProfilePage />} />
-          <Route path=":_id" element={<EditUser />} />
-          <Route path="users" element={<AdminModRoute />}>
-            <Route index element={<TotalUsers />} />
+    <>
+      <BrowserRouter>
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/:category">
+            <Route index element={<SCate />} />
+            <Route path=":id" element={<ProductDetail />} />
+          </Route>
+          <Route
+            path="/success"
+            element={<CheckoutSuccess/>}
+          />
+          <Route path="/profile" element={<ProtectedRoute />}>
+            <Route index element={<ProfilePage />} />
             <Route path=":_id" element={<EditUser />} />
-            <Route path="new" element={<NewUser />} />
+            <Route path="users" element={<AdminModRoute />}>
+              <Route index element={<TotalUsers />} />
+              <Route path=":_id" element={<EditUser />} />
+              <Route path="new" element={<NewUser />} />
+            </Route>
+            <Route path="products" element={<AdminModRoute />}>
+              <Route index element={<TotalProducts />} />
+              <Route path=":_id" element={<EditProduct />} />
+              <Route path="new" element={<NewProduct />} />
+            </Route>
+            <Route path="orders">
+              <Route index element={<TotalOrders />} />
+              <Route path=":_id" element={<EditOrder />} />
+            </Route>
           </Route>
-          <Route path="products" element={<AdminModRoute />}>
-            <Route index element={<TotalProducts />} />
-            <Route path=":_id" element={<EditProduct />} />
-            <Route path="new" element={<NewProduct />} />
-          </Route>
-          <Route path="orders">
-            <Route index element={<TotalOrders />} />
-            <Route path=":_id" element={<EditOrder />} />
-          </Route>
-        </Route>
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+        <ToastContainer/>
+      </BrowserRouter>
+    </>
   );
 };
 

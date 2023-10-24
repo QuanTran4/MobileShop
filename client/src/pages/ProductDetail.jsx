@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import NavBar from "../components/NavBar";
 import { getProduct } from "../services/product";
 import { useDispatch } from "react-redux";
 import { addItem } from "../slices/CartSlice";
-import "swiper/css";
-import "swiper/css/navigation";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { Col, Container, Row } from "react-bootstrap";
 import parse from "html-react-parser";
+import { toast } from "react-toastify";
 
 const ProductDetail = () => {
   const location = useLocation();
@@ -46,13 +44,15 @@ const ProductDetail = () => {
     const getDispatch = () => {
       if (typeof cart.colors === "string") {
         dispatch(addItem(cart));
+        toast.success("Item added to cart", {
+          position: toast.POSITION.BOTTOM_LEFT,
+        });
       }
     };
     cart?.colors && getDispatch();
   }, [cart]);
   return (
     <>
-      <NavBar />
       <Container>
         {data && (
           <>
@@ -69,23 +69,15 @@ const ProductDetail = () => {
                       <img
                         src={color ? color.image : null}
                         alt="img"
-                        // className="img-fluid "
-                        // width={auto}
                         height={400}
                       />
                     )}
                   </SwiperSlide>
 
-                  {data.productImage.map((product) => {
+                  {data.productImage.map((product, index) => {
                     return (
-                      <SwiperSlide>
-                        <img
-                          // className="img-fluid "
-                          src={product}
-                          alt={product}
-                          // width={auto}
-                          height={400}
-                        />
+                      <SwiperSlide key={index}>
+                        <img src={product} alt={product} height={400} />
                       </SwiperSlide>
                     );
                   })}
@@ -93,19 +85,17 @@ const ProductDetail = () => {
               </Col>
               <Col md={7}>
                 <Row>
-                  <p className="mb-2">
-                    <h3>
-                      <b>{data.name}</b>
-                    </h3>
-                  </p>
-                  <p className="text-end mb-2">
-                    <h5>{Intl.NumberFormat("en-US").format(data.price)} VND</h5>
-                  </p>
+                  <h3 className="mb-2">
+                    <b>{data.name}</b>
+                  </h3>
+                  <h5 className="text-end mb-2">
+                    {Intl.NumberFormat("en-US").format(data.price)} VND
+                  </h5>
                   <Row className="mb-2 d-flex">
                     <span className="me-2">Color</span>
-                    {data.colors.map((item) => {
+                    {data.colors.map((item, index) => {
                       return (
-                        <Col md={1}>
+                        <Col md={1} key={index}>
                           <button
                             className={
                               color === item ? "me-2 bg-primary" : "me-2"
@@ -141,7 +131,7 @@ const ProductDetail = () => {
                   <p className="text-center"> Similar Product</p>
                   {similarProduct.map((items) => {
                     return (
-                      <Col md={2} className="mx-auto">
+                      <Col md={2} className="mx-auto" key={items._id}>
                         <img
                           src={items.colors[0].image}
                           width={100}
@@ -160,7 +150,11 @@ const ProductDetail = () => {
             </Row>
             <Row>
               <Col md={12} className="text-center description">
-                {parse(`${data.desc}`)}
+                {data?.desc ? (
+                  <>{parse(`${data.desc}`)}</>
+                ) : (
+                  <>NO DESCRIPTION</>
+                )}
               </Col>
             </Row>
           </>

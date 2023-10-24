@@ -1,5 +1,14 @@
 const User = require("../models/User");
 
+const createUser = async (req, res) => {
+  const newUser = req.body;
+  try {
+    const savedUser = await User.saved(newUser);
+    res.status(200).json("User Created Successfully");
+  } catch (err) {
+    res.status(401).json(err);
+  }
+};
 const updateUser = async (req, res) => {
   if (req.body.password) {
     req.body.password = CryptoJS.AES.encrypt(
@@ -7,7 +16,6 @@ const updateUser = async (req, res) => {
       process.env.PASS_SEC
     ).toString();
   }
-
   try {
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
@@ -16,7 +24,7 @@ const updateUser = async (req, res) => {
       },
       { new: true }
     );
-    res.status(200).json(updatedUser);
+    res.status(200).json("User Updated Successfully");
   } catch (err) {
     res.status(500).json(err);
   }
@@ -50,23 +58,13 @@ const getAllUser = async (req, res) => {
       .limit(ITEMS_PER_PAGE)
       .skip(skip);
     const [count, items] = await Promise.all([countPromise, itemsPromise]);
-    const pageCount = Math.ceil(count / ITEMS_PER_PAGE);
     return res.status(200).json({
-      pagination: { count, pageCount },
+      count,
       items,
     });
   } catch (e) {
     return res.status(401).json(e);
   }
-  // const query = req.query.new;
-  // try {
-  //   const users = query
-  //     ? await User.find({},{'password':0}).sort({ _id: -1 }).limit(7)
-  //     : await User.find();
-  //   res.status(200).json(users);
-  // } catch (err) {
-  //   res.status(500).json(err);
-  // }
 };
 const getUserStats = async (req, res) => {
   const date = new Date();
@@ -98,4 +96,5 @@ module.exports = {
   getSingleUser,
   getAllUser,
   getUserStats,
+  createUser
 };

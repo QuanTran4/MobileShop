@@ -1,86 +1,98 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { getAllOrder, getUserOrder } from "../../../services/order";
+import {
+  deleteOrder,
+  getAllOrder,
+  getUserOrder,
+} from "../../../services/order";
 import { Link } from "react-router-dom";
-import { Col, Pagination, Row } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
+import PaginationComponent from "../../../components/Pagination";
+import { toast } from "react-toastify";
 const TotalOrders = () => {
   const { user } = useSelector((state) => state.user);
+  const [openModal, setOpenModal] = useState();
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
   const [data, setData] = useState();
-  const [perPage, setPerPage] = useState(2);
-  let totalPages = [];
-  for (let number = 1; number <= pageCount; number++) {
-    totalPages.push(
-      <Pagination.Item
-        key={number}
-        active={number === page}
-        onClick={() => handlePage(number)}
-      >
-        {number}
-      </Pagination.Item>
-    );
-  }
+  const [perPage, setPerPage] = useState(5);
+  const handleModal = (id) => {
+    setOpenModal(id);
+  };
+  const handleDelete = (id) => {
+    deleteOrder(id).then((res) => {
+      toast.done(res.data, {
+        position: toast.POSITION.TOP_RIGHT,
+      });
+    });
+    setData(data.filter((item) => item._id !== id));
+    setOpenModal();
+  };
   useEffect(() => {
     const getOrder = () => {
       if (user.role === "user") {
         getUserOrder(user._id, { page, perPage })
           .then((res) => {
             setData(res.data.items);
-            setPageCount(res.data.pagination.pageCount);
+            setPageCount(res.data.count);
           })
-          .catch((err) => {
-          });
+          .catch((err) => {});
       } else {
         getAllOrder({ page, perPage })
           .then((res) => {
             setData(res.data.items);
-            setPageCount(res.data.pagination.pageCount);
+            setPageCount(res.data.count);
           })
-          .catch((err) => {
-          });
+          .catch((err) => {});
       }
     };
     page && perPage && getOrder();
   }, [page, perPage]);
 
-  const handlePrevious = () => {
-    setPage((p) => {
-      if (p === 1) return p;
-      return p - 1;
-    });
-  };
-  const handlePage = (number) => {
-    setPage(number);
-  };
-  const handleNext = () => {
-    setPage((p) => {
-      if (p === pageCount) return p;
-      return p + 1;
-    });
-  };
-
   return (
-    <div className="flex-6 text-center w-100">
-      <div className="d-flex justify-content-center alisgn-items-center">
-        <h3 className="mx-auto">
-          {user.role === "user" ? (
-            <>{user.username} Orders</>
-          ) : (
-            <>Total Orders</>
-          )}
-        </h3>
-      </div>
+    <div className="flex-6 text-center w-100" style={{ height: "75vh" }}>
+      <Container className="d-flex mb-2">
+        {user.role === "user" ? (
+          <h3 className="mx-auto">{user.username} orders</h3>
+        ) : (
+          <h3 className="mx-auto">Total Orders</h3>
+        )}
+      </Container>
       {data ? (
-        <>
-          <div>
+        <div className="h-100 overflow-auto">
+          <div className="mb-4">
             <Row className="mx-auto mb-2 border-bottom">
-              <Col md={1}>OrderId</Col>
-              {user.role == "admin" && <Col md={1}>UserId</Col>}
-              <Col md={3}>Product</Col>
-              <Col md={1}>Amount</Col>
-              <Col md={1}>Status</Col>
-              <Col md={2}>Address</Col>
+              <Col md={1}>
+                <h5>OrderId</h5>
+              </Col>
+              {user.role == "admin" && (
+                <Col md={1}>
+                  <h5>UserId</h5>
+                </Col>
+              )}
+              <Col md={3}>
+                <h5>Product</h5>
+              </Col>
+              <Col md={1}>
+                <h5>Amount</h5>
+              </Col>
+              <Col md={1}>
+                <h5>Status</h5>
+              </Col>
+              <Col md={2}>
+                <h5>Address</h5>
+              </Col>
+              {user.role === "admin" ||
+                (user.role === "mod" && (
+                  <>
+                    <Col md={1}>
+                      <h5>Edit</h5>
+                    </Col>
+                    <Col md={2}>
+                      <h5>Delete</h5>
+                    </Col>
+                  </>
+                ))}
             </Row>
             {data.map((item) => {
               return (
@@ -93,11 +105,14 @@ const TotalOrders = () => {
                       {item.userId}
                     </Col>
                   )}
-                  <Col md={3} className="text-break">
+                  <Col md={3} className="text-break text-center">
                     {item.products.map((product, index) => {
                       return (
-                        <span className="d-flex mx-auto mb-2" key={index}>
-                          Product Name: {product.productName}, Quantity:{" "}
+                        <span
+                          className="d-flex mx-auto mb-2 justify-content-center"
+                          key={index}
+                        >
+                          {product.productName}, {product.color}, Quantity:{" "}
                           {product.quantity}
                         </span>
                       );
@@ -111,50 +126,86 @@ const TotalOrders = () => {
                   </Col>
                   <Col md={2} className="text-break">
                     <div className="d-flex mx-auto flex-column">
-                      <span>City: {item.address.city}</span>
-                      <span>Country:{item.address.country}</span>
-                      <span>Postal Code:{item.address.postal_code}</span>
+                      {item.address?.city && (
+                        <span>City: {item.address.city}</span>
+                      )}
+                      {item.address?.country && (
+                        <span>Country: {item.address.country}</span>
+                      )}
+                      {item.address?.postal_code && (
+                        <span>Postal Code: {item.address.postal_code}</span>
+                      )}
+                      {item.address?.address && (
+                        <>
+                          <span>Address: {item.address.address}</span>
+                          <span>Name: {item.address.name}</span>
+                          <span>Phone number: {item.address.number}</span>
+                        </>
+                      )}
                     </div>
                   </Col>
-                  {user.role === "admin" && (
+                  {user.role === "user" ? (
                     <Col md={1}>
                       <button className="btn btn-primary btn-block">
                         <Link to={`${item._id}`} state={item}>
-                          <span className="text-black">Edit</span>
+                          <span className="text-white">View</span>
                         </Link>
                       </button>
                     </Col>
+                  ) : (
+                    <>
+                      <Col md={1}>
+                        <button className="btn btn-primary btn-block">
+                          <Link to={`${item._id}`} state={item}>
+                            <span className="text-white">Edit</span>
+                          </Link>
+                        </button>
+                      </Col>
+                      <Col md={2}>
+                        <button
+                          className="btn btn-danger btn-block"
+                          onClick={() => handleModal(item._id)}
+                        >
+                          Delete
+                        </button>
+                        <div className={openModal === item._id ? "" : "d-none"}>
+                          <p className="mb-2">
+                            Do you want to delete this Order ?
+                          </p>
+                          <span>
+                            <button
+                              className="me-2 btn btn-info mx-auto"
+                              onClick={() => handleDelete(item._id)}
+                            >
+                              Yes
+                            </button>
+                            <button
+                              className="btn btn-warning"
+                              onClick={() => setOpenModal()}
+                            >
+                              No
+                            </button>
+                          </span>
+                        </div>
+                      </Col>
+                    </>
                   )}
+                  <Col md={1}>{item.payment_method}</Col>
                 </Row>
               );
             })}
           </div>
-          <div className="container d-flex justify-content-center">
-            <div className="d-flex flex-fill">
-              <label htmlFor="order">Order Per Page</label>
-              <select
-                name="order"
-                value={perPage}
-                onChange={(e) => {
-                  setPerPage(e.target.value);
-                  setPage(1);
-                }}
-              >
-                <option value={2}>2</option>
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-              </select>
-            </div>
-            <Pagination size="sm">
-              <Pagination.Prev disabled={page === 1} onClick={handlePrevious} />
-              {totalPages}
-              <Pagination.Next
-                disabled={page === pageCount}
-                onClick={handleNext}
-              />
-            </Pagination>
-          </div>
-        </>
+          <Container className="mb-5">
+            <PaginationComponent
+              itemsCount={pageCount}
+              itemsPerPage={perPage}
+              currentPage={page}
+              setCurrentPage={setPage}
+              setItemPerPage={setPerPage}
+              alwaysShown={false}
+            />
+          </Container>
+        </div>
       ) : (
         <>Loading...</>
       )}

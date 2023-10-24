@@ -28,7 +28,6 @@ const Login = () => {
     login({ username: data.username, password: data.password })
       .then((res) => {
         dispatch(LOGIN_SUCCESS(res.data));
-        
       })
       .catch((err) => {
         dispatch(LOGIN_FAILURE(err.response.data));
@@ -49,16 +48,6 @@ const Login = () => {
               required
             />
           </Form.Group>
-          {/* <Form.Group className="mb-2">
-              <Form.Label htmlFor="email">Email</Form.Label>
-              <Form.Control
-                type="email"
-                id="email"
-                placeholder="christopher123@gmail.com"
-                onChange={handleChange}
-                required
-              />
-            </Form.Group> */}
           <Form.Group className="mb-2">
             <Form.Label htmlFor="password">Password</Form.Label>
             <Form.Control

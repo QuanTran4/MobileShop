@@ -26,7 +26,7 @@ const updatedOrder = async (req, res) => {
       },
       { new: true }
     );
-    res.status(200).json(updatedOrder);
+    res.status(200).json("Order Updated Successfully");
   } catch (err) {
     res.status(500).json(err);
   }
@@ -52,9 +52,8 @@ const getAllOrder = async (req, res) => {
       .limit(ITEMS_PER_PAGE)
       .skip(skip);
     const [count, items] = await Promise.all([countPromise, itemsPromise]);
-    const pageCount = Math.ceil(count / ITEMS_PER_PAGE);
     return res.status(200).json({
-      pagination: { count, pageCount },
+      count,
       items,
     });
   } catch (e) {
@@ -108,10 +107,8 @@ const getUserOrder = async (req, res) => {
       .skip(skip);
     const [count, items] = await Promise.all([countPromise, itemsPromise]);
 
-    const pageCount = Math.ceil(count / ITEMS_PER_PAGE);
-
     return res.status(200).json({
-      pagination: { count, pageCount },
+      count,
       items,
     });
   } catch (e) {

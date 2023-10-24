@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import NavBar from "../components/NavBar";
 import Products from "../components/Products";
 import { getAllPublicProducts } from "../services/product";
 import Categories from "../components/Categories";
@@ -19,7 +18,6 @@ const Home = () => {
   }, []);
   return (
     <>
-      <NavBar />
       <Container className="mt-4">
         <Categories />
         <Products content={phone} title="Latest Phones" />

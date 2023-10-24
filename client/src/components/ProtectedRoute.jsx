@@ -14,7 +14,6 @@ const ProtectedRoute = () => {
   }, []);
   return (
     <>
-      <NavBar />
       <div className="d-flex">
         <SideBar />
         <Outlet />

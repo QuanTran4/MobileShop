@@ -11,7 +11,7 @@ const AdminModRoute = () => {
     }
   }, []);
   return (
-    <div className="flex-6 text-center w-100">
+    <div className="flex-6 text-center w-100"  style={{height:'75vh'}}>
         <Outlet />
     </div>
   );

@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import { getAllPublicProducts } from "../services/product";
-import { Card, CardBody, Col, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import {
+  Card,
+  CardBody,
+  CardFooter,
+  CardImg,
+  CardText,
+  CardTitle,
+  Col,
+  Row,
+} from "react-bootstrap";
 // import parse from "html-react-parser";
-import FormatPrice from "../Helper/FormatPrice";
+import FormatPrice from "./FormatPrice";
 const Products = ({ content, title }) => {
   const [data, setData] = useState();
   useEffect(() => {
@@ -20,65 +24,53 @@ const Products = ({ content, title }) => {
           {title && (
             <Col md={12}>
               <span className="d-flex">
-                <h3>{title}</h3>
-                <Link to={`/${data[0].categories}`} className="ms-auto">
-                  Watch more
-                </Link>
+                <h3 className="mx-auto">{title}</h3>
+                <Link to={`/${data[0].categories}`}>more</Link>
               </span>
             </Col>
           )}
-          {data.map((product) => {
-            return (
-              <Col
-                lg={3}
-                md={5}
-                key={product._id}
-                className="mb-2 text-center"
-                width={"100%"}
-                style={{ position: "inherit" }}
-              >
-                  <img
-                    src={product.colors[0].image}
-                    alt="Image"
-                    height={250}
-                    width={"100%"}
-                    // style={{ position: "inherit" }}
-                    // onMouseEnter={(e) => {
-                    //   e.target.style.cursor = "pointer";
-                    //   e.target.style.scale = '1.2'
-                    // }}
-                    // onMouseOut={(e) =>{
-                    //   e.target.style.scale = '1'
-                    // }}
-                    className="mb-2"
-                  />
-                  <span>
-                    <h5>{product.name}</h5>
-                    <p>
-                      <FormatPrice price={product.price} />
-                    </p>
-                    {/* {product?.desc && (
-                      <>
-                        <p className="text-break">
-                          {parse(
-                            `${product.desc}`.slice(
-                              0,
-                              product.desc.indexOf("</h")
-                            )
-                          )}
-                        </p>
-                      </>
-                    )} */}
-                    <Link
-                      to={`/${product.categories}/${product._id}`}
-                      className="btn btn-secondary"
-                    >
-                      Detail
-                    </Link>
-                  </span>
-              </Col>
-            );
-          })}
+          <div className="d-flex flex-row flex-wrap p-0 mx-auto">
+            {data.map((product) => {
+              return (
+                <Col
+                  lg={3}
+                  md={5}
+                  key={product._id}
+                  className="text-center"
+                  style={{ position: "inherit" }}
+                >
+                  <Card className=" p-1 m-0 mb-2 shadow-lg">
+                    <CardImg
+                      src={product.colors[0].image}
+                      alt="Image"
+                      height={250}
+                      width={"90%"}
+                    ></CardImg>
+                    {/* <img
+                      className="mb-2"
+                      src={product.colors[0].image}
+                      alt="Image"
+                      height={250}
+                      width={"90%"}
+                    /> */}
+                    <CardBody className="p-0 pt-3 ">
+                      <CardTitle>{product.name}</CardTitle>
+                      <CardText>
+                        <FormatPrice price={product.price} />
+                      </CardText>
+                    </CardBody>
+                    <CardFooter>
+                      <Link to={`/${product.categories}/${product._id}`}
+                        className="text-decoration-none btn btn-block"
+                      >
+                        Detail
+                      </Link>
+                    </CardFooter>
+                  </Card>
+                </Col>
+              );
+            })}
+          </div>
         </Row>
       )}
     </>

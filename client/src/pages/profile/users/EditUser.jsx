@@ -4,6 +4,7 @@ import { useLocation, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Col, Form, Row } from "react-bootstrap";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const EditUser = () => {
   const { _id } = useParams();
@@ -14,7 +15,6 @@ const EditUser = () => {
   const { user } = useSelector((state) => state.user);
   useEffect(() => {
     getSingleUser(_id).then((res) => {
-      console.log(res.data);
       setData(res.data);
     });
   }, []);
@@ -43,21 +43,23 @@ const EditUser = () => {
     }
     const updateData = { ...data, img };
     editUser(_id, updateData)
-      .then(() => {
-        setSuccessful(true);
-        setMessage("User update successful");
+      .then((res) => {
+        toast.update(res.data, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       })
       .catch((err) => {
-        setSuccessful(false);
-        setMessage(err.data);
+        toast.error(err.data, {
+          position: toast.POSITION.TOP_RIGHT,
+        });
       });
   };
-  return (
-    <div className="flex-6 w-100">
-      <div>
+  const commonData = () => {
+    return (
+      <>
         {data && (
           <Row className="mt-2 mx-auto">
-            <Col md={4}>
+            <Col md={3}>
               <p>Profile Image</p>
               <img
                 src={
@@ -75,81 +77,77 @@ const EditUser = () => {
             <Col md={8}>
               <Form onSubmit={handleEdit}>
                 <Row>
-                  {!successful && (
-                    <>
-                      <Col md={5}>
-                        <label htmlFor="username">Username</label>
-                        <input
-                          type="text"
-                          className="form-control"
-                          name="username"
-                          value={data.username}
-                          readOnly
-                        />
-                      </Col>
+                  <Col md={6} className="mb-2">
+                    <label htmlFor="username">
+                      <h5>Username</h5>
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="username"
+                      value={data.username}
+                      readOnly
+                    />
+                  </Col>
 
-                      <Col md={5}>
-                        <label htmlFor="email">Email</label>
-                        <input
-                          type="email"
-                          className="form-control"
-                          name="email"
-                          value={data.email}
-                          readOnly
-                        />
-                      </Col>
-                      {user.role !== "user" ? (
-                        <Col md={5} className="mb-2 me-2">
-                          <label htmlFor="role">Role</label>
-                          <select
-                            className="form-select"
-                            name="role"
-                            required
-                            onChange={handleChange}
-                            defaultValue={data.role}
-                          >
-                            <option value={"admin"}>Admin</option>
-                            <option value={"mod"}>Moderator</option>
-                            <option value={"user"}>User</option>
-                          </select>
-                        </Col>
-                      ) : null}
-                      <Col md={5}>
-                        <label htmlFor="image">Profile Picture(optional)</label>
-                        <input
-                          type="file"
-                          className="form-control"
-                          name="image"
-                          onChange={handleChange}
-                        />
-                      </Col>
-
-                      <div className="form-group">
-                        <button className="btn btn-primary btn-block">
-                          Edit
-                        </button>
-                      </div>
-                    </>
-                  )}
+                  <Col md={6} className="mb-2">
+                    <label htmlFor="email">
+                      <h5>Email</h5>
+                    </label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      name="email"
+                      value={data.email}
+                      readOnly
+                    />
+                  </Col>
+                  {user.role !== "user" ? (
+                    <Col md={6} className="mb-2">
+                      <label htmlFor="role">
+                        <h5>Role</h5>
+                      </label>
+                      <select
+                        className="form-select"
+                        name="role"
+                        required
+                        onChange={handleChange}
+                        defaultValue={data.role}
+                      >
+                        <option value={"admin"}>Admin</option>
+                        <option value={"mod"}>Moderator</option>
+                        <option value={"user"}>User</option>
+                      </select>
+                    </Col>
+                  ) : null}
+                  <Col md={6} className="mb-2">
+                    <label htmlFor="image">
+                      <h5>Profile Picture</h5>
+                    </label>
+                    <input
+                      type="file"
+                      className="form-control"
+                      name="image"
+                      onChange={handleChange}
+                    />
+                  </Col>
                 </Row>
+                <button className="btn btn-primary mt-2">Edit</button>
               </Form>
-              {message && (
-                <>
-                  <div
-                    className={
-                      successful ? "alert alert-success" : "alert alert-danger"
-                    }
-                    role="alert"
-                  >
-                    {message}
-                  </div>
-                </>
-              )}
             </Col>
           </Row>
         )}
-      </div>
-    </div>
+      </>
+    );
+  };
+  return (
+    <>
+      {user.role === "user" ? (
+        <div className="flex-6 w-100">{commonData()}</div>
+      ) : (
+        <>{commonData()}</>
+      )}
+    </>
   );
 };
 

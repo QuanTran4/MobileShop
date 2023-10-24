@@ -31,7 +31,7 @@ const ProfilePage = () => {
         res.data.map((item) =>
           setUserStats((prev) => [
             ...prev,
-            { name: MONTHS[item._id - 1], "Active User": item.total },
+            { name: MONTHS[item._id - 1], "User/Month": item.total },
           ])
         );
       } catch {}
@@ -42,16 +42,16 @@ const ProfilePage = () => {
   return (
     <div className="flex-6 text-center w-100">
       {user.role === "admin" && (
-        <>
-          <Chart
-            data={userStats}
-            title="User Analytics"
-            grid
-            dataKey="Active User"
-          />
-        </>
+        <Chart
+          data={userStats}
+          title="User Analytics"
+          grid
+          dataKey="User/Month"
+        />
       )}
-      {user.role === "user" && <>Hello {user.username}</>}
+      {user.role === "user" && (
+        <p className="border h-100 text-center">Hello {user.username}</p>
+      )}
     </div>
   );
 };

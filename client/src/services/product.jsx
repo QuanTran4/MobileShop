@@ -1,7 +1,6 @@
 import { publicRequest, userRequest } from "./requestMethods";
 const API_URL = "/products";
 export const getAllProducts = (query) => {
-  console.log(query);
   return userRequest.get(API_URL + "/admin", { params: query });
 };
 export const getAllPublicProducts = () => {

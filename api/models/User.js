@@ -11,6 +11,7 @@ const UserSchema = new mongoose.Schema(
       default: 'user'
     },
     img: { type: String },
+    unreadNoti: {type:Boolean},
   },
   { timestamps: true }
 );
