@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { login } from "../services/auth";
 import { Button, Card, Form } from "react-bootstrap";
 import { LOGIN_FAILURE, LOGIN_START, LOGIN_SUCCESS } from "../slices/UserSlice";
-const Login = () => {
+const Login = ({ socket }) => {
   const [data, setData] = useState({});
   const { user, loading, error } = useSelector((state) => state.user);
   const nav = useNavigate();
@@ -22,23 +22,35 @@ const Login = () => {
       [e.target.name]: e.target.value,
     }));
   };
-  const handleRegister = async (e) => {
+  useEffect(() => {
+    const checkUser = () => {
+      socket.on("Server", (res) => {
+        if (res !== "Success") {
+          dispatch(LOGIN_FAILURE(res));
+        } else {
+          login({ username: data.username, password: data.password })
+            .then((res) => {
+              dispatch(LOGIN_SUCCESS(res.data));
+            })
+            .catch((err) => {
+              dispatch(LOGIN_FAILURE(err.response.data));
+            });
+        }
+      });
+    };
+    checkUser();
+  }, [loading]);
+  const handleLogin = async (e) => {
     e.preventDefault();
     dispatch(LOGIN_START());
-    login({ username: data.username, password: data.password })
-      .then((res) => {
-        dispatch(LOGIN_SUCCESS(res.data));
-      })
-      .catch((err) => {
-        dispatch(LOGIN_FAILURE(err.response.data));
-      });
+    socket.emit("checkUser", data.username);
   };
 
   return (
     <Card className="card-container">
       <Card.Img src="//ssl.gstatic.com/accounts/ui/avatar_2x.png" />
       <Card.Body>
-        <Form onSubmit={handleRegister}>
+        <Form onSubmit={handleLogin}>
           <Form.Group className="mb-2">
             <Form.Label htmlFor="username">Username</Form.Label>
             <Form.Control

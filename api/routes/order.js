@@ -16,7 +16,7 @@ const {
 
 const router = require("express").Router();
 
-router.post("/", verifyToken, createOrder); //CREATE
+router.post("/", createOrder); //CREATE
 router.put("/:id", verifyTokenAndAdmin, updatedOrder); //UPDATE
 router.delete("/:id", verifyTokenAndAdmin, deleteOrder); //DELETE
 router.get("/find/:id", verifyTokenAndAuthorization,getUserOrder); //GET USER ORDERS

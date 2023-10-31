@@ -34,22 +34,30 @@ const socketIO = require("socket.io")(http, {
 //Add this before the app.get() block
 let onlineUsers = [];
 socketIO.on("connection", (socket) => {
-  socket.on("addnewUser", async (userId) => {
-    !onlineUsers.some((user) => user.userId === userId) &&
+  socket.on("checkUser", async (username) => {
+    const user = onlineUsers.find((user) => user.username === username);
+    if (user) {
+      socket.emit("Server", "This account is currently online");
+    } else {
+      socket.emit("Server", "Success");
+    }
+  });
+  socket.on("addnewUser", async (username) => {
+    !onlineUsers.some((user) => user.username === username) &&
       onlineUsers.push({
-        userId,
+        username,
         socketId: socket.id,
       });
 
     const adminsAndMods = await User.findOne(
-      { _id: userId, role: { $ne: "user" } },
-      { unreadNoti: 1 }
+      { username: username, role: { $ne: "user" }, unreadNoti: true },
+      { unreadNoti: 1, username: 1 }
     );
     if (adminsAndMods && adminsAndMods?.unreadNoti) {
       const user = onlineUsers.find(
-        (user) => user.userId === adminsAndMods._id.toString()
+        (user) => user.username === adminsAndMods.username
       );
-      socketIO.to(user.socketId).emit("newOrder", "newOrder123");
+      socketIO.to(user.socketId).emit("newOrder", "New Order");
     }
   });
   socket.on("disconnect", () => {
@@ -57,24 +65,24 @@ socketIO.on("connection", (socket) => {
   });
 
   socket.on("logout", () => {
-    socket.disconnect(true);
+    onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
   });
 
   socket.on("orderSuccess", async () => {
     const adminsAndMods = await User.find(
       { role: { $ne: "user" } },
-      { _id: 1 }
+      { username: 1, _id: 0 }
     );
-    const a = adminsAndMods.map((item) => {
-      return (item._id = item._id.toString());
+    const array = adminsAndMods.map((item) => {
+      return item.username;
     });
-    a.forEach(async (item) => {
-      const user = onlineUsers.find((user) => user.userId === item);
+    array.forEach(async (username) => {
+      const user = onlineUsers.find((user) => user.username === username);
       if (user) {
-        socketIO.to(user.socketId).emit("newOrder", "newOrder123");
+        socketIO.to(user.socketId).emit("newOrder", "New Order");
       } else {
-        const user = await User.findByIdAndUpdate(
-          item,
+        await User.findOneAndUpdate(
+          { username: username },
           {
             $set: { unreadNoti: true },
           },

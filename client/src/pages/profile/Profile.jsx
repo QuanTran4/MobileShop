@@ -25,32 +25,32 @@ const ProfilePage = () => {
   );
 
   useEffect(() => {
-    const getStats = async () => {
-      try {
-        const res = await userRequest.get("/users/stats");
-        res.data.map((item) =>
-          setUserStats((prev) => [
-            ...prev,
-            { name: MONTHS[item._id - 1], "User/Month": item.total },
-          ])
-        );
-      } catch {}
+    const getStats = () => {
+      if (user.role !== "user") {
+        userRequest.get("/users/stats").then((res) => {
+          res.data.map((item) => {
+            setUserStats((prev) => [
+              ...prev,
+              { name: MONTHS[item._id - 1], "User/Month": item.total },
+            ]);
+          });
+        });
+      }
     };
     getStats();
   }, [MONTHS]);
   const { user } = useSelector((state) => state.user);
   return (
     <div className="flex-6 text-center w-100">
-      {user.role === "admin" && (
+      {user.role === "user" ? (
+        <p className="border h-100 text-center">Hello {user.username}</p>
+      ) : (
         <Chart
           data={userStats}
           title="User Analytics"
           grid
           dataKey="User/Month"
         />
-      )}
-      {user.role === "user" && (
-        <p className="border h-100 text-center">Hello {user.username}</p>
       )}
     </div>
   );

@@ -64,7 +64,6 @@ const Quill = ({description,toParent}) => {
           toolbar: {
             container: [
               [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-              // [{ header: "1" }, { header: "2" },{ header: "3" }, { header: "4" },{ header: "5" }, { font: [] }],
               [{ align: '' }, { align: 'center' }, { align: 'right' }, { align: 'justify' }],
               [{ size: [] }],
               ["bold", "italic", "underline", "strike", "blockquote"],

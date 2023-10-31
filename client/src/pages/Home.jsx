@@ -4,15 +4,13 @@ import { getAllPublicProducts } from "../services/product";
 import Categories from "../components/Categories";
 import { Container } from "react-bootstrap";
 const Home = () => {
-  const [phone, setPhone] = useState();
-  const [tablet, setTablet] = useState();
-  const [laptop, setLaptop] = useState();
+  const [data, setData] = useState();
   useEffect(() => {
     getAllPublicProducts()
       .then((res) => {
-        setPhone(res.data.Phones);
-        setTablet(res.data.Tablet);
-        setLaptop(res.data.Laptop);
+        console.log(res.data)
+        setData(res.data);
+
       })
       .catch((err) => {});
   }, []);
@@ -20,9 +18,13 @@ const Home = () => {
     <>
       <Container className="mt-4">
         <Categories />
-        <Products content={phone} title="Latest Phones" />
-        <Products content={tablet} title="Latest Tablets" />
-        {/* <Products content={laptop} title="Lastest Laptops" /> */}
+        {data && (
+          <>
+            <Products content={data.phone} title="Latest Phones" />
+            {/* <Products content={data.tablet} title="Latest Tablets" /> */}
+            {/* <Products content={data.laptop} title="Lastest Laptops" /> */}
+          </>
+        )}
       </Container>
     </>
   );

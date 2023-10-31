@@ -4,9 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 const Categories = () => {
   const nav = useNavigate();
-  const handleClick = (path) => {
-    nav(`/${path}`);
-  };
   return (
     <Card>
       <Row
@@ -16,7 +13,7 @@ const Categories = () => {
         <Col md={4}>
           <span
             onClick={() => {
-              handleClick("Phone");
+              nav(`/Phone`);
             }}
             onMouseEnter={(e) => {
               e.target.style.cursor = "pointer";
@@ -33,7 +30,7 @@ const Categories = () => {
         <Col md={4}>
           <span
             onClick={() => {
-              handleClick("Tablet");
+              nav(`/Tablet`);
             }}
             onMouseEnter={(e) => {
               e.target.style.cursor = "pointer";
@@ -50,7 +47,7 @@ const Categories = () => {
         <Col md={4}>
           <span
             onClick={() => {
-              handleClick("Laptop");
+              nav(`/Laptop`);
             }}
             onMouseEnter={(e) => {
               e.target.style.cursor = "pointer";

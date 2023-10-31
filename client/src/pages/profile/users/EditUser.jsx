@@ -44,7 +44,7 @@ const EditUser = () => {
     const updateData = { ...data, img };
     editUser(_id, updateData)
       .then((res) => {
-        toast.update(res.data, {
+        toast.info(res.data, {
           position: toast.POSITION.TOP_RIGHT,
         });
       })

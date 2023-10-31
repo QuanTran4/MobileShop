@@ -13,6 +13,7 @@ const TotalProducts = () => {
   const [perPage, setPerPage] = useState(5);
   useEffect(() => {
     getAllProducts({ page, perPage }).then((res) => {
+      console.log(res.data);
       setData(res.data.items);
       setPageCount(res.data.count);
     });
@@ -79,7 +80,23 @@ const TotalProducts = () => {
                     {item.categories}
                   </Col>
                   <Col md={1} className="text-break border-end">
-                    {item.price}
+                    {item?.discount ? (
+                      <>
+                        <p>{item.price}</p>
+                        <span>
+                          <p>
+                            Discount:(
+                            {parseFloat(
+                              ((item.price - item.discount) / item.price) * 100
+                            ).toFixed(0)}
+                            % )
+                          </p>
+                          <h6>{item?.discount}</h6>
+                        </span>
+                      </>
+                    ) : (
+                      <p>{item.price}</p>
+                    )}
                   </Col>
                   <Col md={2} className="text-break border-end">
                     {item.colors.map((color, index) => {
@@ -92,7 +109,7 @@ const TotalProducts = () => {
                     })}
                   </Col>
 
-                  {item.isActive ? (
+                  {item.isActive === "Active" ? (
                     <Col md={1} className="text-break border-end">
                       Active
                     </Col>

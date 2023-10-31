@@ -39,7 +39,7 @@ const getSingleProduct = async (req, res) => {
       {
         categories: product.categories,
         _id: { $ne: product._id },
-        isActive: true,
+        isActive: "Active",
       },
       { name: 1, colors: { $slice: 1 }, _id: 1, categories: 1 }
     )
@@ -74,8 +74,8 @@ const getAllProduct = async (req, res) => {
 const getAllPublicProduct = async (req, res) => {
   try {
     const Phones = await Product.find(
-      { isActive: true, categories: "Phone" },
-      { _id: 1, name: 1, price: 1, colors: { $slice: 1 }, categories: 1 }
+      { isActive: "Active" },
+      { _id: 1, name: 1, price: 1, colors: { $slice: 1 }, categories: 1,discount:1 }
     )
       .sort({
         createdAt: -1,
@@ -83,8 +83,8 @@ const getAllPublicProduct = async (req, res) => {
       .limit(4);
 
     const Tablet = await Product.find(
-      { isActive: true, categories: "Tablet" },
-      { _id: 1, name: 1, price: 1, colors: { $slice: 1 }, categories: 1 }
+      { isActive: "Active", categories: "Tablet" },
+      { _id: 1, name: 1, price: 1, colors: { $slice: 1 }, categories: 1,discount:1 }
     )
       .sort({
         createdAt: -1,
@@ -92,15 +92,15 @@ const getAllPublicProduct = async (req, res) => {
       .limit(4);
 
     const Laptop = await Product.find(
-      { isActive: true, categories: "Laptop" },
-      { _id: 1, name: 1, price: 1, colors: { $slice: 1 }, categories: 1 }
+      { isActive: "Active", categories: "Laptop" },
+      { _id: 1, name: 1, price: 1, colors: { $slice: 1 }, categories: 1,discount:1 }
     )
       .sort({
         createdAt: -1,
       })
       .limit(4);
-
-    return res.status(200).json({ Phones, Tablet, Laptop });
+    const data = { phone: Phones, tablet: Tablet, laptop: Laptop };
+    return res.status(200).json(data);
   } catch (e) {
     return res.status(401).json(e);
   }

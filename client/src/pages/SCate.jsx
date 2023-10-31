@@ -61,15 +61,8 @@ const SCate = () => {
         </Col>
         <Col
           md={11}
-          className={!open && "overflow-hidden"}
-          style={open ? {} : { height: "750px" }}
         >
-          {filter ? <Products content={filter} /> : <>Loading...</>}
-          {data && data.length > 4 && !open && (
-            <div className=" text-center sticky-bottom">
-              <button onClick={handleOpen}>More Products</button>
-            </div>
-          )}
+          {filter ? <Products content={filter} open={'open'} /> : <>Loading...</>}
         </Col>
       </Container>
     </>

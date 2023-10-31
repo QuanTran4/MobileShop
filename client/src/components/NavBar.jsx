@@ -13,14 +13,17 @@ import {
 } from "react-bootstrap";
 import { editUser } from "../services/user";
 import { io } from "socket.io-client";
-const NavBar = () => {
+
+//order them vao array admin or mod để biết ai đã check r, ai chưa.
+// thêm chức năng nếu login rồi, qua browser khác login sẽ check là đang login hay chưa
+// thêm chức năng nếu 1 admin or mod đang chỉnh 1 data nhất định, những admin mod khác sẽ được thông báo là đang có người chỉnh
+const NavBar = ({ socket }) => {
   const nav = useNavigate();
   const location = useLocation();
   const pathname = location.pathname.split("/")[1];
   const { user: currentUser } = useSelector((state) => state.user);
   const cart = useSelector((state) => state.cart);
   const [noti, setNoti] = useState(null);
-  const [socket, setSocket] = useState(null);
   const dispatch = useDispatch();
 
   //update cart total
@@ -30,54 +33,28 @@ const NavBar = () => {
     };
     cart && getTotal();
   }, [cart, dispatch]);
-
-  //user logout of server
   useEffect(() => {
-    const disconnect = () => {
-      socket.emit("logout");
-    };
-    currentUser === null && socket !== null && disconnect();
-  }, [socket, currentUser]);
-
-  //set user to enter socket server
-  useEffect(() => {
-    if (socket === null) return;
-    else {
-      if (currentUser === null) {
-        socket.emit("logout");
-      } else {
-        socket.emit("addnewUser", currentUser._id);
-      }
+    //do nothing when user try to login
+    if (pathname === "login" || pathname === "success") {
+      return;
     }
-  }, [socket, currentUser]);
-
-  //enter socket server
-  useEffect(() => {
+    //if user is logged in then add user to server
     if (currentUser !== null) {
-      setSocket(io("http://localhost:8080"));
+      socket.emit("addnewUser", currentUser.username);
     }
-  }, [currentUser]);
-
-  //send order success to socket server
-  // useEffect(() => {
-  //   const createOrder = () => {
-  //     socket.emit("orderSuccess");
-  //   };
-  //   pathname === "success" && createOrder();
-  // }, [pathname]);
-
-  //admin or mod when logged in will see a new order notif
+  }, [currentUser, pathname]);
   useEffect(() => {
-    if (socket === null) return;
+    //admin or mod when logged in will see a new order notif
     socket.on("newOrder", (res) => {
       setNoti(res);
     });
   }, [socket]);
 
-  const logOut = useCallback(() => {
+  const logOut = () => {
     dispatch(LOGOUT());
+    socket.emit("logout");
     nav("/");
-  }, []);
+  };
   const clearNoti = () => {
     editUser(currentUser._id, { unreadNoti: false }).then((res) => {
       setNoti(null);
@@ -85,80 +62,74 @@ const NavBar = () => {
     });
   };
   return (
-    <>
-      <Navbar
-        collapseOnSelect
-        expand="md"
-        bg="dark"
-        data-bs-theme="dark"
-        className="mb-3"
-      >
-        <Navbar.Brand href="/">Mobile Store</Navbar.Brand>
-        <Navbar.Brand
-          as={Link}
-          to={"/cart"}
-          className="d-flex flex-fill justify-content-end"
-        >
+    <Navbar
+      collapseOnSelect
+      expand="md"
+      bg="dark"
+      data-bs-theme="dark"
+      className="mb-3"
+    >
+      <Navbar.Brand href="/">Mobile Store</Navbar.Brand>
+      <Navbar.Brand className="d-flex flex-fill justify-content-end">
+        <Link to={"/cart"}>
           <span className="justify-content-end">
             <i
               className="fa fa-shopping-cart"
               aria-hidden={true}
-              style={{ fontSize: "28px" }}
+              style={{ fontSize: "28px", color: "green" }}
             />
-            <span className="text-primary d-inline-block">{cart.amount}</span>
+            <span className="d-inline-block">{cart.amount}</span>
           </span>
-        </Navbar.Brand>
-        <Navbar.Toggle
-          aria-controls="navbarScroll"
-          data-bs-target="#navbarScroll"
-        />
-        <Navbar.Collapse id="navbarScroll" className="justify-content-end">
+        </Link>
+      </Navbar.Brand>
+      <Navbar.Toggle
+        aria-controls="navbarScroll"
+        data-bs-target="#navbarScroll"
+      />
+      <Navbar.Collapse id="navbarScroll" className="justify-content-end">
+        {currentUser !== null ? (
           <Nav>
-            {currentUser !== null ? (
-              <>
-                {currentUser.role !== "user" && noti !== null && (
-                  <NavItem
-                    onClick={() => clearNoti()}
-                    onMouseEnter={(e) => {
-                      e.target.style.cursor = "pointer";
-                    }}
-                  >
-                    <span className="text-info">New Order</span>
-                    <i
-                      className="fa fa-bell"
-                      aria-hidden="true"
-                      style={noti !== null ? { fontSize: 24 } : {}}
-                    ></i>
-                  </NavItem>
-                )}
-
-                <NavLink href="/profile">
-                  <img
-                    src={currentUser.img}
-                    className="rounded-circle me-1"
-                    width={25}
-                    height={25}
-                  />
-                  {currentUser.username}
-                </NavLink>
-                <NavLink
-                  onClick={() => {
-                    logOut();
-                  }}
-                >
-                  Logout
-                </NavLink>
-              </>
-            ) : (
-              <>
-                <NavLink href="/login">Login</NavLink>
-                <NavLink href="/register">Register</NavLink>
-              </>
+            {currentUser.role !== "user" && noti !== null && (
+              <NavLink
+                onClick={() => clearNoti()}
+                onMouseEnter={(e) => {
+                  e.target.style.cursor = "pointer";
+                }}
+              >
+                <span className="text-info">{noti}</span>
+                <i
+                  className="fa fa-bell text-info"
+                  aria-hidden="true"
+                  style={{ fontSize: 24 }}
+                ></i>
+              </NavLink>
             )}
+
+            <NavLink href="/profile">
+              <img
+                src={currentUser.img}
+                className="rounded-circle me-1"
+                width={25}
+                height={25}
+              />
+              {currentUser.username}
+            </NavLink>
+            <NavLink
+              onClick={() => {
+                logOut();
+              }}
+            >
+              Logout
+            </NavLink>
           </Nav>
-        </Navbar.Collapse>
-      </Navbar>
-    </>
+        ) : (
+          <Nav>
+            <NavLink href="/login">Login</NavLink>
+            <NavLink href="/register">Register</NavLink>
+          </Nav>
+        )}
+      </Navbar.Collapse>
+    </Navbar>
   );
 };
 export default NavBar;

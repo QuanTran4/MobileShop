@@ -1,9 +1,25 @@
 const Order = require("../models/Order");
+const Product = require("../models/Product");
 
 const createOrder = async (req, res) => {
   const newOrder = new Order(req.body);
   try {
     const savedOrder = await newOrder.save();
+    const { products } = req.body;
+    products.map(async (product) => {
+      const { productId, colorId, quantity } = product;
+
+      const updateProductQuantity = await Product.findOneAndUpdate(
+        { _id: productId, "colors._id": `${colorId}` },
+        {
+          $inc: {
+            "colors.$.inStock": -quantity,
+          },
+        },
+        {new:true}
+      );
+      console.log(updateProductQuantity.colors);
+    });
     res.status(200).json(savedOrder);
   } catch (err) {
     res.status(500).json(err);

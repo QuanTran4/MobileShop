@@ -22,10 +22,11 @@ const ProductDetail = () => {
 
   useEffect(() => {
     getProduct(path[2]).then((res) => {
+      console.log(res.data);
       setData(res.data.product);
       const { colors } = res.data.product;
       colors.map((color) => {
-        if (color.inStock === true) {
+        if (color.inStock !== 0) {
           return setColor(color);
         }
       });
@@ -56,7 +57,6 @@ const ProductDetail = () => {
   }, [cart]);
 
   return (
-    <>
       <Container>
         {data && (
           <>
@@ -75,7 +75,6 @@ const ProductDetail = () => {
                         src={color ? color.image : null}
                         alt="img"
                         height={300}
-                        // className="img-fluid"
                         width={"80%"}
                       />
                     )}
@@ -102,14 +101,14 @@ const ProductDetail = () => {
                     <span className="me-2">Color</span>
                     {data.colors.map((item, index) => {
                       return (
-                        <Col md={1} key={index}>
+                        <Col md={1} key={index} className="me-1">
                           <button
                             className={
                               color === item ? "me-2 bg-primary" : "me-2"
                             }
                             onClick={() => {
                               setColor(item);
-                              if (item.inStock === true) {
+                              if (item.inStock !== 0) {
                                 setDisabled(false);
                               } else {
                                 setDisabled(true);
@@ -204,7 +203,6 @@ const ProductDetail = () => {
           </>
         )}
       </Container>
-    </>
   );
 };
 

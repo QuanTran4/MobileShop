@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -24,46 +24,52 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "swiper/css";
 import "swiper/css/navigation";
-const App = () => {
+import { io } from "socket.io-client";
 
+const App = () => {
+  const [socket, setSocket] = useState(null);
+  useEffect(() => {
+    setSocket(io("http://localhost:8080"));
+  }, []);
   return (
     <>
-      <BrowserRouter>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/:category">
-            <Route index element={<SCate />} />
-            <Route path=":id" element={<ProductDetail />} />
-          </Route>
-          <Route
-            path="/success"
-            element={<CheckoutSuccess/>}
-          />
-          <Route path="/profile" element={<ProtectedRoute />}>
-            <Route index element={<ProfilePage />} />
-            <Route path=":_id" element={<EditUser />} />
-            <Route path="users" element={<AdminModRoute />}>
-              <Route index element={<TotalUsers />} />
-              <Route path=":_id" element={<EditUser />} />
-              <Route path="new" element={<NewUser />} />
-            </Route>
-            <Route path="products" element={<AdminModRoute />}>
-              <Route index element={<TotalProducts />} />
-              <Route path=":_id" element={<EditProduct />} />
-              <Route path="new" element={<NewProduct />} />
-            </Route>
-            <Route path="orders">
-              <Route index element={<TotalOrders />} />
-              <Route path=":_id" element={<EditOrder />} />
-            </Route>
-          </Route>
-        </Routes>
-        <ToastContainer/>
-      </BrowserRouter>
+      {socket && (
+        <>
+          <BrowserRouter>
+            <NavBar socket={socket}/>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login socket={socket} />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/:category">
+                <Route index element={<SCate />} />
+                <Route path=":id" element={<ProductDetail />} />
+              </Route>
+              <Route path="/success" element={<CheckoutSuccess socket={socket} />} />
+              <Route path="/profile" element={<ProtectedRoute />}>
+                <Route index element={<ProfilePage />} />
+                <Route path=":_id" element={<EditUser />} />
+                <Route path="users" element={<AdminModRoute />}>
+                  <Route index element={<TotalUsers />} />
+                  <Route path=":_id" element={<EditUser />} />
+                  <Route path="new" element={<NewUser />} />
+                </Route>
+                <Route path="products" element={<AdminModRoute />}>
+                  <Route index element={<TotalProducts />} />
+                  <Route path=":_id" element={<EditProduct />} />
+                  <Route path="new" element={<NewProduct />} />
+                </Route>
+                <Route path="orders">
+                  <Route index element={<TotalOrders />} />
+                  <Route path=":_id" element={<EditOrder />} />
+                </Route>
+              </Route>
+            </Routes>
+            <ToastContainer />
+          </BrowserRouter>
+        </>
+      )}
     </>
   );
 };

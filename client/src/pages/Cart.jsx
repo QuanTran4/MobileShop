@@ -75,13 +75,14 @@ const Cart = () => {
       }
     };
     const manual = () => {
-      if (checkOut) {
-        setPayment(true);
-      } else {
-        toast.info("Must be logged in to checkout", {
-          position: toast.POSITION.TOP_CENTER,
-        });
-      }
+      // if (checkOut) {
+      //   setPayment(true);
+      // } else {
+      //   toast.info("Must be logged in to checkout", {
+      //     position: toast.POSITION.TOP_CENTER,
+      //   });
+      // }
+      setPayment(true);
     };
     const handleChange = (e) => {
       setData((prev) => ({
@@ -218,20 +219,24 @@ const Cart = () => {
                           onSubmit={handleSubmit}
                           className="d-flex flex-column"
                         >
+                          {user === null &&
+                          <>
+                          <label htmlFor="name">Name</label>
+                          <input
+                            type="text"
+                            name='name'
+                            onChange={handleChange}
+                            placeholder="Name or Fullname"
+                            className="form-control"
+                            required
+                          />
+                          </>
+                          }
                           <label htmlFor="address">Address</label>
                           <input
                             type="text"
                             name="address"
                             placeholder="123 Pham Van Chieu"
-                            className="form-control"
-                            onChange={handleChange}
-                            required
-                          />
-                          <label htmlFor="name">Name</label>
-                          <input
-                            type="text"
-                            name="name"
-                            placeholder="Name or Fullname"
                             className="form-control"
                             onChange={handleChange}
                             required

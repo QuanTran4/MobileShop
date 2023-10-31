@@ -7,7 +7,7 @@ const verifyToken = async (req, res, next) => {
     const token = authHeader.split(" ")[1];
     jwt.verify(token, process.env.JWT_SEC, async (err, user) => {
       if (err) res.status(403).json("Token is not valid!");
-      const newUser = await User.findById(user.id);
+      const newUser = await User.findById(req.headers.id);
       const { role, _id, ...others } = newUser;
       req.user = { role: role, id: _id.toString() };
       next();

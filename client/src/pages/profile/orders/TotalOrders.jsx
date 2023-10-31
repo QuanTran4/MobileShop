@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { Col, Container, Row } from "react-bootstrap";
 import PaginationComponent from "../../../components/Pagination";
 import { toast } from "react-toastify";
+import Moment from "react-moment";
 const TotalOrders = () => {
   const { user } = useSelector((state) => state.user);
   const [openModal, setOpenModal] = useState();
@@ -48,7 +49,7 @@ const TotalOrders = () => {
     };
     page && perPage && getOrder();
   }, [page, perPage]);
-
+  console.log(data);
   return (
     <div className="flex-6 text-center w-100" style={{ height: "75vh" }}>
       <Container className="d-flex mb-2">
@@ -71,7 +72,7 @@ const TotalOrders = () => {
                 </Col>
               )}
               <Col md={2}>
-                <h5>Product</h5>
+                <h5>Order Date</h5>
               </Col>
               <Col md={1}>
                 <h5>Amount</h5>
@@ -109,17 +110,17 @@ const TotalOrders = () => {
                     </Col>
                   )}
                   <Col md={2} className="text-break text-center">
-                    {item.products.map((product, index) => {
+                    {/* {item.products.map((product, index) => {
                       return (
                         <span
                           className="d-flex mx-auto mb-2 justify-content-center"
                           key={index}
                         >
-                          {product.productName}, {product.color}, Quantity:{" "}
-                          {product.quantity}
+                          {product.quantity}x {product.productName}, {product.color}
                         </span>
                       );
-                    })}
+                    })} */}
+                    <Moment date={item.createdAt} format="MM/DD/YYYY hh:mm:ss" />
                   </Col>
                   <Col md={1} className="text-break">
                     {Intl.NumberFormat("en-US").format(item.amount)} VND
@@ -129,7 +130,7 @@ const TotalOrders = () => {
                   </Col>
                   <Col md={2} className="text-break">
                     <div className="d-flex mx-auto flex-column">
-                      {item.address?.city && (
+                      {/* {item.address?.city && (
                         <span>City: {item.address.city}</span>
                       )}
                       {item.address?.country && (
@@ -137,14 +138,13 @@ const TotalOrders = () => {
                       )}
                       {item.address?.postal_code && (
                         <span>Postal Code: {item.address.postal_code}</span>
-                      )}
-                      {item.address?.address && (
-                        <>
-                          <span>Address: {item.address.address}</span>
-                          <span>Name: {item.address.name}</span>
-                          <span>Phone number: {item.address.number}</span>
-                        </>
-                      )}
+                      )} */}
+                      {/* {item.address?.address && (
+                        <> */}
+                          <span>Address: {item.address?.address || item.address?.city}</span>
+                          <span>Phone number: {item.address?.number || item.address.phone}</span>
+                        {/* </>
+                      )} */}
                     </div>
                   </Col>
                   <Col md={1}>{item.payment_method}</Col>

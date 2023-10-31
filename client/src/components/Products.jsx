@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Card,
   CardBody,
@@ -12,8 +12,34 @@ import {
 } from "react-bootstrap";
 // import parse from "html-react-parser";
 import FormatPrice from "./FormatPrice";
-const Products = ({ content, title }) => {
+const useIsOverflow = (ref, callback) => {
+  const [isOverflow, setIsOverflow] = useState(undefined);
+
+  useLayoutEffect(() => {
+    const { current } = ref;
+
+    const trigger = () => {
+      const hasOverflow = current.scrollHeight > current.clientHeight;
+
+      setIsOverflow(hasOverflow);
+
+      if (callback) callback(hasOverflow);
+    };
+
+    if (current) {
+      trigger();
+    }
+  }, [callback, ref]);
+
+  return isOverflow;
+};
+const Products = ({ content, title, open }) => {
   const [data, setData] = useState();
+  const [over, setOver] = useState(false);
+  const location = useLocation();
+  const ref = useRef();
+  const isOverflow = useIsOverflow(ref);
+  console.log(isOverflow);
   useEffect(() => {
     setData(content);
   }, [content]);
@@ -25,21 +51,26 @@ const Products = ({ content, title }) => {
             <Col md={12}>
               <span className="d-flex">
                 <h3 className="mx-auto">{title}</h3>
-                <Link to={`/${data[0].categories}`}>more</Link>
+                {data.length === 4 && (
+                  <Link to={`/${data[0].categories}`}>more</Link>
+                )}
               </span>
             </Col>
           )}
-          <div className="d-flex flex-row flex-wrap p-0 mx-auto">
+          <div
+            className="d-flex flex-row flex-wrap p-0 mx-auto"
+            ref={ref}
+          >
             {data.map((product) => {
               return (
                 <Col
                   lg={3}
-                  md={5}
+                  md={6}
                   key={product._id}
                   className="text-center mb-2"
                   style={{ position: "inherit" }}
                 >
-                  <Card className=" p-0 m-0">
+                  <Card>
                     <CardImg
                       src={product.colors[0].image}
                       alt="Image"
@@ -49,7 +80,14 @@ const Products = ({ content, title }) => {
                     <CardBody className="p-0 pt-2">
                       <CardTitle>{product.name}</CardTitle>
                       <CardText>
-                        <FormatPrice price={product.price} />
+                        {product?.discount ? (
+                          <FormatPrice
+                            price={product.price}
+                            discount={product.discount}
+                          />
+                        ) : (
+                          <FormatPrice price={product.price} />
+                        )}
                       </CardText>
                     </CardBody>
                     <CardFooter>
@@ -65,6 +103,7 @@ const Products = ({ content, title }) => {
               );
             })}
           </div>
+          {}
         </Row>
       )}
     </>

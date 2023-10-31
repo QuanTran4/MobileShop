@@ -6,7 +6,11 @@ const SideBar = () => {
   const { user } = useSelector((state) => state.user);
   return (
     <div className="flex-1 border-end">
-      <h4>Dashboard</h4>
+      <h4>
+        <Link to="/profile" className="text-decoration-none">
+          Dashboard
+        </Link>
+      </h4>
       {user.role !== "user" ? (
         <>
           <div className="p-3 bg-secondary.bg-gradient">

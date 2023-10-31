@@ -1,7 +1,7 @@
-import { userRequest } from "./requestMethods";
+import { publicRequest, userRequest } from "./requestMethods";
 const API_URL = "/orders";
 export const newOrder = (data) => {
-  return userRequest.post(API_URL + "/", data);
+  return publicRequest.post(API_URL + "/", data);
 };
 export const getAllOrder = (page) => {
   return userRequest.get(API_URL + "/", { params: page });
